@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> replaceFragment(HomeFragment())
                 R.id.nav_library -> { /* Sau này làm fragment thư viện thì nhét vào đây */ }
-                R.id.nav_profile -> { /* Tương tự */ }
+                R.id.nav_profile -> {replaceFragment(AccountFragment())}
             }
             true
         }

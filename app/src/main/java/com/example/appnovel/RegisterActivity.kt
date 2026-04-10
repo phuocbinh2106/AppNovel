@@ -12,10 +12,15 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
 class RegisterActivity : AppCompatActivity() {
+
+    private lateinit var dbHelper: DatabaseHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_register)
+
+        dbHelper = DatabaseHelper(this)
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         val edtEmail = findViewById<TextInputEditText>(R.id.edtRegEmail)
@@ -47,8 +52,25 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            Toast.makeText(this,"Đăng ký thành công với $email", Toast.LENGTH_SHORT).show()
-            finish()
+            if(password.length < 6) {
+                Toast.makeText(this, "Mật khẩu phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val username = email.substringBefore("@")
+
+            when (dbHelper.registerUser(username, email, password)) {
+                "success" -> {
+                    Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                "email_exists" -> {
+                    Toast.makeText(this, "Email đã tồn tại", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(this, "Đã có lỗi xảy ra, thử lại sau", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

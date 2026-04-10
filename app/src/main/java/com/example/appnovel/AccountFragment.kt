@@ -1,19 +1,120 @@
 package com.example.appnovel
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import com.example.appnovel.databinding.FragmentAccountBinding
 
 class AccountFragment : Fragment() {
+    private var _binding: FragmentAccountBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var sharedPref: SharedPreferences
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account, container, false)
+    ): View {
+        _binding = FragmentAccountBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        sharedPref = requireActivity()
+            .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        updateUI()
+        setupClickListeners()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
+    private fun updateUI() {
+        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
+        if (isLoggedIn) {
+            binding.layoutGuest.visibility = View.GONE
+            binding.layoutLoggedIn.visibility = View.VISIBLE
+
+            binding.tvUsername.text =
+                sharedPref.getString("username", "User")
+            binding.tvEmail.text =
+                sharedPref.getString("email", "")
+        } else {
+            binding.layoutGuest.visibility = View.VISIBLE
+            binding.layoutLoggedIn.visibility = View.GONE
+        }
+    }
+
+    private fun setupClickListeners() {
+
+        // Chưa đăng nhập: bấm → mở LoginActivity
+        binding.btnLoginRegister.setOnClickListener {
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
+        }
+
+        // Chưa đăng nhập: đổi màu nền
+        binding.btnChangeBackground.setOnClickListener {
+            // TODO: mở màn hình đổi màu nền
+        }
+
+        // Đã đăng nhập: đổi màu nền (using the correct ID from XML: btnChangeBackgroundColor)
+        binding.btnChangeBackgroundColor.setOnClickListener {
+            // TODO: mở màn hình đổi màu nền
+        }
+
+        // Đã đăng nhập: Nạp xu
+        binding.btnNapXu.setOnClickListener {
+            // TODO
+        }
+
+        // Đã đăng nhập: Vé tháng
+        binding.btnVeThang.setOnClickListener {
+            // TODO
+        }
+
+        // Đã đăng nhập: Lịch sử nạp
+        binding.btnLichSuNap.setOnClickListener {
+            // TODO
+        }
+
+        // Đã đăng nhập: Đổi mật khẩu
+        binding.btnDoiMatKhau.setOnClickListener {
+            // TODO
+        }
+
+        // Đã đăng nhập: Thành viên
+        binding.btnThanhVien.setOnClickListener {
+            // TODO
+        }
+
+        // Đã đăng nhập: Đăng xuất
+        binding.btnDangXuat.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Đăng xuất")
+                .setMessage("Bạn có chắc muốn đăng xuất không?")
+                .setPositiveButton("Đăng xuất") { _, _ ->
+                    sharedPref.edit()
+                        .putBoolean("isLoggedIn", false)
+                        .remove("username")
+                        .remove("email")
+                        .apply()
+                    updateUI()
+                }
+                .setNegativeButton("Hủy", null)
+                .show()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

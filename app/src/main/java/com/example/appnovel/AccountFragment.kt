@@ -11,11 +11,15 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.appnovel.databinding.FragmentAccountBinding
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 class AccountFragment : Fragment() {
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
     private lateinit var sharedPref: SharedPreferences
+    private var firestoreListener: ListenerRegistration? = null
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +40,30 @@ class AccountFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         updateUI()
+        listenCoins()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        firestoreListener?.remove()
+    }
+
+    private fun listenCoins() {
+        val userId = sharedPref.getInt("userId", -1)
+        android.util.Log.d("PayOS", "listenCoins userId=$userId")
+        if (userId == -1) return
+
+        firestoreListener?.remove()
+        firestoreListener = db.collection("users")
+            .document(userId.toString())
+            .addSnapshotListener { snap, error ->
+                if (error != null || snap == null) return@addSnapshotListener
+                val coins = snap.getLong("coins") ?: 0L
+                sharedPref.edit().putInt("coins", coins.toInt()).apply()
+                activity?.runOnUiThread {
+                    binding.tvCoins.text = "${formatMoney(coins.toInt())} Xu"
+                }
+            }
     }
 
     private fun updateUI() {
@@ -50,12 +78,16 @@ class AccountFragment : Fragment() {
                 sharedPref.getString("email", "")
 
             val coins =sharedPref.getInt("coins", 0)
-            binding.tvCoins.text = "$coins Xu"
+            binding.tvCoins.text = "${formatMoney(coins.toInt())} Xu"
         } else {
             binding.layoutGuest.visibility = View.VISIBLE
             binding.layoutLoggedIn.visibility = View.GONE
+            firestoreListener?.remove()
         }
     }
+
+    private fun formatMoney(amount: Int) =
+        String.format("%,d", amount).replace(",", ".")
 
     private fun setupClickListeners() {
 
@@ -115,6 +147,7 @@ class AccountFragment : Fragment() {
                         .putBoolean("isLoggedIn", false)
                         .remove("username")
                         .remove("email")
+                        .remove("coins")
                         .apply()
                     updateUI()
                 }
@@ -125,6 +158,7 @@ class AccountFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        firestoreListener?.remove()
         _binding = null
     }
 }

@@ -75,6 +75,7 @@ class ChonGoiActivity : AppCompatActivity() {
             com.google.firebase.functions.FirebaseFunctions
                 .getInstance("us-central1")
                 .getHttpsCallable("createPayosOrder")
+                .withTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
                 .call(data)
                 .addOnSuccessListener { result ->
                     android.util.Log.d("PayOS", "Success: ${result.data}")

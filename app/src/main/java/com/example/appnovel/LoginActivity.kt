@@ -8,21 +8,22 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var dbHelper: DatabaseHelper
+    private lateinit var auth: FirebaseAuth
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 
-        dbHelper = DatabaseHelper(this)
+        auth = FirebaseAuth.getInstance()
 
         val edtEmail = findViewById<TextInputEditText>(R.id.edtEmail)
         val edtPassword = findViewById<TextInputEditText>(R.id.edtPassword)
@@ -40,34 +41,58 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val user = dbHelper.loginUser(email, password)
+            btnLogin.isEnabled = false
 
-            if(user != null) {
-                getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
-                    .putBoolean("isLoggedIn", true)
-                    .putString("username", user.username)
-                    .putString("email", user.email)
-                    .putInt("userId", user.id)
-                    .putInt("coins", user.coins)
-                    .apply()
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener { result ->
+                    val uid = result.user?.uid ?: return@addOnSuccessListener
 
-                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+                    // Lấy thông tin user từ Firestore
+                    db.collection("users").document(uid).get()
+                        .addOnSuccessListener { doc ->
+                            val username = doc.getString("username") ?: ""
+                            val coins = (doc.getLong("coins") ?: 0L).toInt()
 
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show()
-            }
+                            getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
+                                .putBoolean("isLoggedIn", true)
+                                .putString("userId", uid)
+                                .putString("username", username)
+                                .putString("email", email)
+                                .putInt("coins", coins)
+                                .apply()
+
+                            Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+                            startActivity(
+                                Intent(this, MainActivity::class.java).apply {
+                                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                }
+                            )
+                            finish()
+                        }
+                        .addOnFailureListener {
+                            btnLogin.isEnabled = true
+                            Toast.makeText(this, "Lỗi lấy thông tin, thử lại!", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                .addOnFailureListener { e ->
+                    btnLogin.isEnabled = true
+                    val msg = when {
+                        e.message?.contains("password is invalid") == true ||
+                                e.message?.contains("INVALID_LOGIN_CREDENTIALS") == true -> "Email hoặc mật khẩu không đúng"
+                        e.message?.contains("no user record") == true -> "Email không tồn tại"
+                        e.message?.contains("badly formatted") == true -> "Email không hợp lệ"
+                        else -> "Đăng nhập thất bại: ${e.message}"
+                    }
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                }
         }
+
         tvRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
 
         tvForgotPassword.setOnClickListener {
-            Toast.makeText(this,"Chức năng quên mật khẩu đang phát triển", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Chức năng quên mật khẩu đang phát triển", Toast.LENGTH_SHORT).show()
         }
     }
 }

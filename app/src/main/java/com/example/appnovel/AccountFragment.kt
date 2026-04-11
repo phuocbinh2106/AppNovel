@@ -49,19 +49,32 @@ class AccountFragment : Fragment() {
     }
 
     private fun listenCoins() {
-        val userId = sharedPref.getInt("userId", -1)
+        // Xóa userId cũ dạng Int nếu còn
+        val userId = try {
+            sharedPref.getString("userId", null)
+        } catch (e: ClassCastException) {
+            // userId cũ là Int, xóa đi và đăng xuất
+            sharedPref.edit()
+                .clear()
+                .apply()
+            updateUI()
+            return
+        }
+
         android.util.Log.d("PayOS", "listenCoins userId=$userId")
-        if (userId == -1) return
+        if (userId == null) return
 
         firestoreListener?.remove()
         firestoreListener = db.collection("users")
-            .document(userId.toString())
+            .document(userId)
             .addSnapshotListener { snap, error ->
                 if (error != null || snap == null) return@addSnapshotListener
                 val coins = snap.getLong("coins") ?: 0L
                 sharedPref.edit().putInt("coins", coins.toInt()).apply()
                 activity?.runOnUiThread {
-                    binding.tvCoins.text = "${formatMoney(coins.toInt())} Xu"
+                    if (_binding != null) {
+                        binding.tvCoins.text = "${formatMoney(coins.toInt())} Xu"
+                    }
                 }
             }
     }
@@ -124,7 +137,7 @@ class AccountFragment : Fragment() {
 
         // Đã đăng nhập: Lịch sử nạp
         binding.btnLichSuNap.setOnClickListener {
-            // TODO
+            startActivity(Intent(requireContext(), LichSuNapActivity::class.java))
         }
 
         // Đã đăng nhập: Đổi mật khẩu

@@ -17,13 +17,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppNovel">
         <activity
+            android:name=".LichSuNapActivity"
+            android:exported="false" />
+        <activity
             android:name=".PaymentWebViewActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="appnovel" android:host="payment"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="payment"
+                    android:scheme="appnovel" />
             </intent-filter>
         </activity>
         <activity

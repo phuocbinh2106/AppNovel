@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f0f0f"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#0f0f0f"
+        app:titleTextColor="#ffffff"
+        app:navigationIcon="@drawable/ic_arrow_back" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="Số tiền nạp :"
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
+
+            <!-- Danh sách gói — RadioGroup -->
+            <RadioGroup
+                android:id="@+id/radioGroupGoi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical" />
+
+            <!-- Nút đổi xu -->
+            <Button
+                android:id="@+id/btnDoiXu"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="24dp"
+                android:backgroundTint="#c8e6c9"
+                android:text="Đổi xu qua chuyển khoản"
+                android:textColor="#1a1a1a"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- Chú ý -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Chú ý"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1. Tỷ lệ quy đổi 1đ = 1 xu + % tặng khi nạp nhiều (tối đa 20%).\n\n2. Sau khi bấm nút Đổi xu, vui lòng chuyển khoản đúng số tiền và nhập đúng nội dung mã nạp để được cộng xu.\n\n3. Nếu có thắc mắc, vui lòng liên hệ fanpage."
+                android:textColor="#9ca3af"
+                android:textSize="13sp"
+                android:lineSpacingExtra="4dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

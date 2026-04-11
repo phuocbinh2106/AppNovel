@@ -23,7 +23,7 @@
             android:orientation="vertical"
             android:padding="16dp"
             android:paddingTop="32dp"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <!-- Tiêu đề -->
             <TextView
@@ -151,10 +151,11 @@
             android:orientation="vertical"
             android:padding="16dp"
             android:paddingTop="32dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <!-- Header: Avatar + tên + email -->
             <LinearLayout
+                android:id="@+id/headerUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
@@ -197,7 +198,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_arrow_right"
+                    android:src="@drawable/ic_arrow_forward"
                     app:tint="#9ca3af" />
             </LinearLayout>
 

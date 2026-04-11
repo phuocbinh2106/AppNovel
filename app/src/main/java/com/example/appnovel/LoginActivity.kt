@@ -47,6 +47,8 @@ class LoginActivity : AppCompatActivity() {
                     .putBoolean("isLoggedIn", true)
                     .putString("username", user.username)
                     .putString("email", user.email)
+                    .putInt("userId", user.id)
+                    .putInt("coins", user.coins)
                     .apply()
 
                 Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()

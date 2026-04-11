@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.appnovel.databinding.FragmentAccountBinding
@@ -47,6 +48,9 @@ class AccountFragment : Fragment() {
                 sharedPref.getString("username", "User")
             binding.tvEmail.text =
                 sharedPref.getString("email", "")
+
+            val coins =sharedPref.getInt("coins", 0)
+            binding.tvCoins.text = "$coins Xu"
         } else {
             binding.layoutGuest.visibility = View.VISIBLE
             binding.layoutLoggedIn.visibility = View.GONE
@@ -65,6 +69,11 @@ class AccountFragment : Fragment() {
             // TODO: mở màn hình đổi màu nền
         }
 
+        binding.layoutLoggedIn.findViewById<LinearLayout>(R.id.headerUser)
+            .setOnClickListener {
+                startActivity(Intent(requireContext(), ProfileActivity::class.java))
+            }
+
         // Đã đăng nhập: đổi màu nền (using the correct ID from XML: btnChangeBackgroundColor)
         binding.btnChangeBackgroundColor.setOnClickListener {
             // TODO: mở màn hình đổi màu nền
@@ -72,7 +81,8 @@ class AccountFragment : Fragment() {
 
         // Đã đăng nhập: Nạp xu
         binding.btnNapXu.setOnClickListener {
-            // TODO
+            startActivity(
+                Intent(requireContext(), NapXuActivity::class.java))
         }
 
         // Đã đăng nhập: Vé tháng

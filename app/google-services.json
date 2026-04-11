@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552790478016",
+    "project_id": "appnovel-cdc69",
+    "storage_bucket": "appnovel-cdc69.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552790478016:android:7527102015390d12f7b125",
+        "android_client_info": {
+          "package_name": "com.example.appnovel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzLd0_hvEdByUES6qow-SxWk608mMO4fE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -102,6 +102,101 @@ class AccountFragment : Fragment() {
     private fun formatMoney(amount: Int) =
         String.format("%,d", amount).replace(",", ".")
 
+    private fun showDoiMatKhauBottomSheet() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_doi_mat_khau, null)
+        dialog.setContentView(view)
+
+        val edtOld = view.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.edtOldPassword)
+        val edtNew = view.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.edtNewPassword)
+        val edtConfirm = view.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.edtConfirmNewPassword)
+        val btnThayDoi = view.findViewById<android.widget.Button>(R.id.btnThayDoi)
+        val tvForgot = view.findViewById<android.widget.TextView>(R.id.tvForgotPassword)
+
+        tvForgot.setOnClickListener {
+            val email = sharedPref.getString("email", "") ?: ""
+            if (email.isEmpty()) return@setOnClickListener
+            com.google.firebase.auth.FirebaseAuth.getInstance()
+                .sendPasswordResetEmail(email)
+                .addOnSuccessListener {
+                    android.widget.Toast.makeText(
+                        requireContext(),
+                        "Đã gửi email đặt lại mật khẩu!",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
+                }
+                .addOnFailureListener {
+                    android.widget.Toast.makeText(
+                        requireContext(),
+                        "Lỗi: ${it.message}",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
+
+        btnThayDoi.setOnClickListener {
+            val oldPass = edtOld.text.toString().trim()
+            val newPass = edtNew.text.toString().trim()
+            val confirmPass = edtConfirm.text.toString().trim()
+
+            if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+                android.widget.Toast.makeText(requireContext(), "Vui lòng nhập đầy đủ", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (newPass != confirmPass) {
+                android.widget.Toast.makeText(requireContext(), "Mật khẩu xác nhận không khớp!", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (newPass.length < 6) {
+                android.widget.Toast.makeText(requireContext(), "Mật khẩu phải có ít nhất 6 ký tự", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+            val email = sharedPref.getString("email", "") ?: ""
+
+            if (user == null || email.isEmpty()) return@setOnClickListener
+
+            btnThayDoi.isEnabled = false
+
+            // Re-authenticate trước khi đổi mật khẩu
+            val credential = com.google.firebase.auth.EmailAuthProvider.getCredential(email, oldPass)
+            user.reauthenticate(credential)
+                .addOnSuccessListener {
+                    user.updatePassword(newPass)
+                        .addOnSuccessListener {
+                            android.widget.Toast.makeText(
+                                requireContext(),
+                                "Đổi mật khẩu thành công!",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                            dialog.dismiss()
+                        }
+                        .addOnFailureListener {
+                            btnThayDoi.isEnabled = true
+                            android.widget.Toast.makeText(
+                                requireContext(),
+                                "Lỗi: ${it.message}",
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
+                .addOnFailureListener {
+                    btnThayDoi.isEnabled = true
+                    android.widget.Toast.makeText(
+                        requireContext(),
+                        "Mật khẩu cũ không đúng!",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+        }
+
+        dialog.show()
+    }
+
     private fun setupClickListeners() {
 
         // Chưa đăng nhập: bấm → mở LoginActivity
@@ -142,7 +237,7 @@ class AccountFragment : Fragment() {
 
         // Đã đăng nhập: Đổi mật khẩu
         binding.btnDoiMatKhau.setOnClickListener {
-            // TODO
+            showDoiMatKhauBottomSheet()
         }
 
         // Đã đăng nhập: Thành viên

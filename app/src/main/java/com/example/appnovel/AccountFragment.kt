@@ -53,7 +53,6 @@ class AccountFragment : Fragment() {
         val userId = try {
             sharedPref.getString("userId", null)
         } catch (e: ClassCastException) {
-            // userId cũ là Int, xóa đi và đăng xuất
             sharedPref.edit()
                 .clear()
                 .apply()

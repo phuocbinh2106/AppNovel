@@ -15,32 +15,25 @@ class NovelVerticalAdapter(private val novelList: List<Novel>) :
         val imgCover: ImageView = itemView.findViewById(R.id.imgCover)
         val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
         val tvAuthor: TextView = itemView.findViewById(R.id.tvAuthor)
-        val tvChapter: TextView = itemView.findViewById(R.id.tvChapter)
-        val tvTime: TextView = itemView.findViewById(R.id.tvTime)
+        val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NovelViewHolder {
-        // Gọi file giao diện dọc mà bạn đã tạo từ trước
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.main_novel_vertical, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.main_novel_vertical, parent, false)
         return NovelViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: NovelViewHolder, position: Int) {
         val currentNovel = novelList[position]
-
         holder.tvTitle.text = currentNovel.title
-        holder.tvAuthor.text = "Tác giả: ${currentNovel.author}"
-        holder.tvChapter.text = currentNovel.chapter
-        holder.tvTime.text = currentNovel.time
+        holder.tvAuthor.text = currentNovel.author
+        holder.tvStatus.text = currentNovel.status
 
-        // Load ảnh bìa bo góc bằng Glide
         Glide.with(holder.itemView.context)
-            .load(currentNovel.coverUrl)
+            .load(currentNovel.imageUrl) // Đã thống nhất dùng imageUrl
+            .placeholder(R.drawable.ic_launcher_background)
             .into(holder.imgCover)
     }
 
-    override fun getItemCount(): Int {
-        return novelList.size
-    }
+    override fun getItemCount(): Int = novelList.size
 }

@@ -1,11 +1,12 @@
 package com.example.appnovel
 
-// Đây là "khuôn mẫu" chứa dữ liệu của một cuốn truyện
+import java.io.Serializable
+
 data class Novel(
+    val id: Int = 0,
     val title: String,
     val author: String,
-    val coverUrl: String,
-    val status: String = "",      // Dùng cho phần Truyện nổi bật
-    val chapter: String = "",     // Dùng cho phần Mới cập nhật
-    val time: String = ""         // Dùng cho phần Mới cập nhật
-)
+    val imageUrl: String, // Đã thống nhất tên biến
+    val description: String = "",
+    val status: String = ""
+) : Serializable

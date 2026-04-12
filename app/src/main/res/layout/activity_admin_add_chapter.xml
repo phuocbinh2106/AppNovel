@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f0f0f">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="THÊM CHAPTER MỚI"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:textColor="#60a5fa"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn bộ truyện"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerNovel"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_card_dark"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nội dung chương"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/edtChapterTitle"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Tên chương (Ví dụ: Chương 1: Sự khởi đầu)"
+            android:textColor="#ffffff"
+            android:textColorHint="#6b7280"
+            android:background="@drawable/bg_card_dark"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/edtChapterContent"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:hint="Viết nội dung chương truyện tại đây..."
+            android:textColor="#ffffff"
+            android:textColorHint="#6b7280"
+            android:background="@drawable/bg_card_dark"
+            android:padding="16dp"
+            android:gravity="top"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btnAddChapter"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="XUẤT BẢN CHAPTER"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="#60a5fa"
+            android:textColor="#ffffff"
+            app:cornerRadius="12dp"/>
+
+    </LinearLayout>
+</ScrollView>

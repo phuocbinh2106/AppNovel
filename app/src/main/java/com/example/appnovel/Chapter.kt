@@ -6,5 +6,6 @@ data class Chapter(
     val id: Int,
     val novelId: Int,
     val title: String,
-    val content: String
+    val content: String,
+    val coinPrice: Int = 0
 ) : Serializable

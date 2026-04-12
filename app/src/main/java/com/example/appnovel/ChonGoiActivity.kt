@@ -14,7 +14,7 @@ import com.example.appnovel.databinding.ActivityChonGoiBinding
 
 class ChonGoiActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChonGoiBinding
-    private var userId = -1
+    private var userId = ""
     private var method = "BANK"
 
     private var selectedIndex = 0
@@ -42,7 +42,7 @@ class ChonGoiActivity : AppCompatActivity() {
 
         method = intent.getStringExtra("METHOD") ?: "BANK"
         userId = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            .getInt("userId", -1)
+            .getString("userId", "") ?: ""
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.apply {
@@ -68,7 +68,7 @@ class ChonGoiActivity : AppCompatActivity() {
             val data = hashMapOf(
                 "amount" to goi.first,
                 "coins" to goi.second,
-                "userId" to userId.toString(),
+                "userId" to userId,
                 "method" to method
             )
 

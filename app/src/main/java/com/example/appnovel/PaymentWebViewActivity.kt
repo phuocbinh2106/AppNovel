@@ -70,7 +70,6 @@ class PaymentWebViewActivity : AppCompatActivity() {
                     val coinsAdded: Long = snap.getLong("coins") ?: 0L
                     getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
                         .edit()
-                        .putInt("coins", coinsAdded.toInt())
                         .apply()
                     runOnUiThread { showSuccessDialog(coinsAdded) }
                 }

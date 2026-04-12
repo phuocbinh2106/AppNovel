@@ -372,13 +372,12 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- Grid 2x3 menu -->
+            <!-- Grid menu -->
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:columnCount="2"
-                android:rowCount="3">
+                android:columnCount="2">
 
                 <!-- Nạp xu -->
                 <LinearLayout
@@ -730,6 +729,63 @@
                     android:text="Thay đổi màu nền"
                     android:textColor="#ffffff"
                     android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="#9ca3af" />
+            </LinearLayout>
+
+            <!-- Quản lý (Chỉ dành cho Admin/Uploader) - ĐẶT Ở DƯỚI CÙNG PHẦN CÀI ĐẶT -->
+            <LinearLayout
+                android:id="@+id/btnAdminManager"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/bg_card_dark"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="12dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_circle_blue"
+                        android:padding="8dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_settings"
+                        app:tint="#f87171" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quản lý hệ thống"
+                        android:textColor="#ffffff"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dành riêng cho Admin và Uploader"
+                        android:textColor="#9ca3af"
+                        android:textSize="11sp" />
+                </LinearLayout>
 
                 <ImageView
                     android:layout_width="24dp"

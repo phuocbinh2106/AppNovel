@@ -50,7 +50,6 @@ class AccountFragment : Fragment() {
 
     private fun listenCoins() {
         val userId = sharedPref.getInt("userId", -1)
-        android.util.Log.d("PayOS", "listenCoins userId=$userId")
         if (userId == -1) return
 
         firestoreListener?.remove()
@@ -72,16 +71,22 @@ class AccountFragment : Fragment() {
             binding.layoutGuest.visibility = View.GONE
             binding.layoutLoggedIn.visibility = View.VISIBLE
 
-            binding.tvUsername.text =
-                sharedPref.getString("username", "User")
-            binding.tvEmail.text =
-                sharedPref.getString("email", "")
+            binding.tvUsername.text = sharedPref.getString("username", "User")
+            binding.tvEmail.text = sharedPref.getString("email", "")
 
-            val coins =sharedPref.getInt("coins", 0)
-            binding.tvCoins.text = "${formatMoney(coins.toInt())} Xu"
+            val coins = sharedPref.getInt("coins", 0)
+            binding.tvCoins.text = "${formatMoney(coins)} Xu"
+
+            val role = sharedPref.getString("role", "user")
+            if (role == "admin" || role == "uploader") {
+                binding.btnAdminManager.visibility = View.VISIBLE
+            } else {
+                binding.btnAdminManager.visibility = View.GONE
+            }
         } else {
             binding.layoutGuest.visibility = View.VISIBLE
             binding.layoutLoggedIn.visibility = View.GONE
+            binding.btnAdminManager.visibility = View.GONE
             firestoreListener?.remove()
         }
     }
@@ -90,54 +95,25 @@ class AccountFragment : Fragment() {
         String.format("%,d", amount).replace(",", ".")
 
     private fun setupClickListeners() {
-
-        // Chưa đăng nhập: bấm → mở LoginActivity
         binding.btnLoginRegister.setOnClickListener {
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
-        }
-
-        // Chưa đăng nhập: đổi màu nền
-        binding.btnChangeBackground.setOnClickListener {
-            // TODO: mở màn hình đổi màu nền
+            startActivity(Intent(requireActivity(), LoginActivity::class.java))
         }
 
         binding.layoutLoggedIn.findViewById<LinearLayout>(R.id.headerUser)
             .setOnClickListener {
-                startActivity(Intent(requireContext(), ProfileActivity::class.java))
+                startActivity(Intent(requireActivity(), ProfileActivity::class.java))
             }
 
-        // Đã đăng nhập: đổi màu nền (using the correct ID from XML: btnChangeBackgroundColor)
-        binding.btnChangeBackgroundColor.setOnClickListener {
-            // TODO: mở màn hình đổi màu nền
+        binding.btnAdminManager.setOnClickListener {
+            // Sử dụng context từ activity để chắc chắn intent đúng class
+            val intent = Intent(requireActivity(), AdminAddActivity::class.java)
+            startActivity(intent)
         }
 
-        // Đã đăng nhập: Nạp xu
         binding.btnNapXu.setOnClickListener {
-            startActivity(
-                Intent(requireContext(), NapXuActivity::class.java))
+            startActivity(Intent(requireActivity(), NapXuActivity::class.java))
         }
 
-        // Đã đăng nhập: Vé tháng
-        binding.btnVeThang.setOnClickListener {
-            // TODO
-        }
-
-        // Đã đăng nhập: Lịch sử nạp
-        binding.btnLichSuNap.setOnClickListener {
-            // TODO
-        }
-
-        // Đã đăng nhập: Đổi mật khẩu
-        binding.btnDoiMatKhau.setOnClickListener {
-            // TODO
-        }
-
-        // Đã đăng nhập: Thành viên
-        binding.btnThanhVien.setOnClickListener {
-            // TODO
-        }
-
-        // Đã đăng nhập: Đăng xuất
         binding.btnDangXuat.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Đăng xuất")
@@ -148,6 +124,7 @@ class AccountFragment : Fragment() {
                         .remove("username")
                         .remove("email")
                         .remove("coins")
+                        .remove("role")
                         .apply()
                     updateUI()
                 }

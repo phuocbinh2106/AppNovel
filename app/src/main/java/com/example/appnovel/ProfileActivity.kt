@@ -100,7 +100,7 @@ class ProfileActivity : AppCompatActivity() {
                 sharedPrefs.edit()
                     .putString("username", newUsername)
                     .apply()
-                Toast.makeText(this, "Cập nhật biệt danha thành công!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Cập nhật biệt danh thành công!", Toast.LENGTH_SHORT).show()
                 finish()
             } else {
                 Toast.makeText(this, "Cập nhật thất bại, thử lại sau.", Toast.LENGTH_SHORT).show()

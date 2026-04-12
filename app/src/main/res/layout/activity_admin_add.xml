@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f0f0f"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="HỆ THỐNG QUẢN TRỊ"
+        android:textColor="#ffffff"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="64dp"
+        android:text="Chào mừng Admin &amp; Uploader"
+        android:textColor="#9ca3af"
+        android:textSize="14sp" />
+
+    <!-- Card Quản lý truyện -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnGoToAddNovel"
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="#fb923c"
+        android:gravity="center_vertical|start"
+        android:paddingStart="24dp"
+        android:text="QUẢN LÝ TRUYỆN"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_upload"
+        app:iconGravity="textStart"
+        app:iconPadding="16dp"
+        app:iconSize="32dp"
+        app:iconTint="#ffffff" />
+
+    <!-- Card Quản lý Chapter -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnGoToAddChapter"
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:backgroundTint="#60a5fa"
+        android:gravity="center_vertical|start"
+        android:paddingStart="24dp"
+        android:text="QUẢN LÝ CHAPTER"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_edit"
+        app:iconGravity="textStart"
+        app:iconPadding="16dp"
+        app:iconSize="32dp"
+        app:iconTint="#ffffff" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Phiên bản dành cho nội bộ"
+        android:textColor="#4b5563"
+        android:textSize="12sp" />
+
+</LinearLayout>

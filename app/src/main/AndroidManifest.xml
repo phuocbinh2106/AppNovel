@@ -16,6 +16,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppNovel">
+
+        <!-- Activities Quản trị -->
+        <activity
+            android:name=".AdminAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminNovelListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminChapterListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAddNovelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAddChapterActivity"
+            android:exported="false" />
+
+        <!-- Các Activities khác -->
         <activity
             android:name=".PaymentWebViewActivity"
             android:exported="true" >
@@ -26,6 +45,7 @@
                 <data android:scheme="appnovel" android:host="payment"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ChonGoiActivity"
             android:exported="false" />
@@ -41,12 +61,12 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

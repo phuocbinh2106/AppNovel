@@ -28,8 +28,9 @@ class NovelHorizontalAdapter(private val novelList: List<Novel>) :
         holder.tvTitle.text = currentNovel.title
         holder.tvStatus.text = currentNovel.status
 
+        // Sử dụng đúng thuộc tính coverUrl từ Novel.kt
         Glide.with(holder.itemView.context)
-            .load(currentNovel.coverUrl)
+            .load(currentNovel.imageUrl)
             .into(holder.imgCover)
     }
 

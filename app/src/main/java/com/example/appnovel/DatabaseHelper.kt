@@ -2,285 +2,180 @@ package com.example.appnovel
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteConstraintException
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import java.security.MessageDigest
 
-class DatabaseHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         const val DATABASE_NAME = "novel.app.db"
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 7
 
-        //Bảng Users
+        const val ROLE_USER = "user"
+        const val ROLE_ADMIN = "admin"
+        const val ROLE_UPLOADER = "uploader"
+
         const val TABLE_USERS = "users"
         const val COL_ID = "id"
         const val COL_USERNAME = "username"
         const val COL_EMAIL = "email"
         const val COL_PASSWORD = "password"
         const val COL_COINS = "coins"
+        const val COL_ROLE = "role"
 
-        //Bảng transactions
-        const val TABLE_TRANSACTIONS = "transactions"
-        const val COL_TXN_ID = "txn_id"
-        const val COL_TXN_USER_ID = "user_id"
-        const val COL_TXN_AMOUNT = "amount"
-        const val COL_TXN_COINS = "coins_added"
-        const val COL_TXN_DATE = "created_at"
+        const val TABLE_NOVELS = "novels"
+        const val COL_NOV_ID = "nov_id"
+        const val COL_NOV_TITLE = "title"
+        const val COL_NOV_AUTHOR = "author"
+        const val COL_NOV_IMAGE = "imageUrl"
+        const val COL_NOV_DESC = "description"
+        const val COL_NOV_STATUS = "status"
+        const val COL_NOV_UPLOADER_ID = "uploader_id"
 
-        //Bảng mã nạp
-        const val TABLE_CODES = "recharge_codes"
-        const val COL_CODE_ID = "code_id"
-        const val COL_CODE_VALUE = "code_value"
-        const val COL_CODE_AMOUNT = "code_amount"
-        const val COL_CODE_COINS = "code_coins"
-        const val COL_CODE_USED = "code_used"
-        const val COL_CODE_USED_BY = "code_used_by"
+        const val TABLE_CHAPTERS = "chapters"
+        const val COL_CH_ID = "ch_id"
+        const val COL_CH_NOVEL_ID = "novel_id"
+        const val COL_CH_TITLE = "chapter_title"
+        const val COL_CH_CONTENT = "content"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL("""
-            CREATE TABLE $TABLE_USERS (
-                $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COL_USERNAME TEXT NOT NULL,
-                $COL_EMAIL TEXT NOT NULL UNIQUE,
-                $COL_PASSWORD TEXT NOT NULL,
-                $COL_COINS INTEGER NOT NULL DEFAULT 0
-            )
-        """.trimIndent())
+        db.execSQL("CREATE TABLE $TABLE_USERS ($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_USERNAME TEXT, $COL_EMAIL TEXT UNIQUE, $COL_PASSWORD TEXT, $COL_COINS INTEGER DEFAULT 0, $COL_ROLE TEXT DEFAULT '$ROLE_USER')")
+        db.execSQL("CREATE TABLE $TABLE_NOVELS ($COL_NOV_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_NOV_TITLE TEXT, $COL_NOV_AUTHOR TEXT, $COL_NOV_IMAGE TEXT, $COL_NOV_DESC TEXT, $COL_NOV_STATUS TEXT, $COL_NOV_UPLOADER_ID INTEGER DEFAULT 0)")
+        db.execSQL("CREATE TABLE $TABLE_CHAPTERS ($COL_CH_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_CH_NOVEL_ID INTEGER, $COL_CH_TITLE TEXT, $COL_CH_CONTENT TEXT, FOREIGN KEY($COL_CH_NOVEL_ID) REFERENCES $TABLE_NOVELS($COL_NOV_ID))")
 
-        db.execSQL("""
-            CREATE TABLE $TABLE_TRANSACTIONS (
-                $COL_TXN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COL_TXN_USER_ID INTEGER NOT NULL,
-                $COL_TXN_AMOUNT INTEGER NOT NULL,
-                $COL_TXN_COINS INTEGER NOT NULL,
-                $COL_TXN_DATE TEXT NOT NULL,
-                FOREIGN KEY ($COL_TXN_USER_ID) REFERENCES $TABLE_USERS($COL_ID)
-            )
-        """.trimIndent())
+        insertDefaultAccount(db, "admin", "admin@gmail.com", "123123", ROLE_ADMIN)
+        insertDefaultAccount(db, "uploader1", "uploader1@gmail.com", "123123", ROLE_UPLOADER)
+        insertDefaultAccount(db, "uploader2", "uploader2@gmail.com", "123123", ROLE_UPLOADER)
+        insertDefaultAccount(db, "uploader3", "uploader3@gmail.com", "123123", ROLE_UPLOADER)
+    }
 
-        db.execSQL("""
-            CREATE TABLE $TABLE_CODES (
-                $COL_CODE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COL_CODE_VALUE TEXT NOT NULL UNIQUE,
-                $COL_CODE_AMOUNT INTEGER NOT NULL,
-                $COL_CODE_COINS INTEGER NOT NULL,
-                $COL_CODE_USED INTEGER NOT NULL DEFAULT 0,
-                $COL_CODE_USED_BY INTEGER DEFAULT NULL
-            )
-        """.trimIndent())
+    private fun insertDefaultAccount(db: SQLiteDatabase, name: String, email: String, pass: String, role: String) {
+        val v = ContentValues().apply {
+            put(COL_USERNAME, name); put(COL_EMAIL, email); put(COL_PASSWORD, hashPassword(pass)); put(COL_ROLE, role)
+        }
+        db.insert(TABLE_USERS, null, v)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_CODES")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_TRANSACTIONS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_CHAPTERS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_NOVELS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
         onCreate(db)
     }
 
-    fun registerUser(username: String, email: String, password: String): String {
+    // --- CRUD TRUYỆN (NOVELS) ---
+    fun addNovel(title: String, author: String, img: String, desc: String, uploaderId: Int = 0): Long {
+        val v = ContentValues().apply {
+            put(COL_NOV_TITLE, title); put(COL_NOV_AUTHOR, author)
+            put(COL_NOV_IMAGE, img); put(COL_NOV_DESC, desc); put(COL_NOV_STATUS, "Đang ra")
+            put(COL_NOV_UPLOADER_ID, uploaderId)
+        }
+        return writableDatabase.insert(TABLE_NOVELS, null, v)
+    }
+
+    fun getAllNovels(): List<Novel> {
+        val list = mutableListOf<Novel>()
+        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_NOVELS ORDER BY $COL_NOV_ID DESC", null)
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(Novel(cursor.getInt(0), cursor.getString(1) ?: "", cursor.getString(2) ?: "", cursor.getString(3) ?: "", cursor.getString(4) ?: "", cursor.getString(5) ?: ""))
+            } while (cursor.moveToNext())
+        }
+        cursor.close(); return list
+    }
+
+    fun getNovelsByRole(role: String, userId: Int): List<Novel> {
+        val list = mutableListOf<Novel>()
+        val sql = if (role == ROLE_ADMIN) {
+            "SELECT * FROM $TABLE_NOVELS ORDER BY $COL_NOV_ID DESC"
+        } else {
+            "SELECT * FROM $TABLE_NOVELS WHERE $COL_NOV_UPLOADER_ID = $userId ORDER BY $COL_NOV_ID DESC"
+        }
+        val cursor = readableDatabase.rawQuery(sql, null)
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(Novel(cursor.getInt(0), cursor.getString(1) ?: "", cursor.getString(2) ?: "", cursor.getString(3) ?: "", cursor.getString(4) ?: "", cursor.getString(5) ?: ""))
+            } while (cursor.moveToNext())
+        }
+        cursor.close(); return list
+    }
+
+    fun updateNovel(id: Int, title: String, author: String, img: String, desc: String, status: String, uploaderId: Int): Boolean {
+        val v = ContentValues().apply {
+            put(COL_NOV_TITLE, title); put(COL_NOV_AUTHOR, author)
+            put(COL_NOV_IMAGE, img); put(COL_NOV_DESC, desc); put(COL_NOV_STATUS, status)
+            put(COL_NOV_UPLOADER_ID, uploaderId)
+        }
+        return writableDatabase.update(TABLE_NOVELS, v, "$COL_NOV_ID=?", arrayOf(id.toString())) > 0
+    }
+
+    fun deleteNovel(id: Int): Boolean {
+        writableDatabase.delete(TABLE_CHAPTERS, "$COL_CH_NOVEL_ID=?", arrayOf(id.toString()))
+        return writableDatabase.delete(TABLE_NOVELS, "$COL_NOV_ID=?", arrayOf(id.toString())) > 0
+    }
+
+    // --- CRUD CHAPTERS ---
+    fun addChapter(novelId: Int, title: String, content: String): Long {
+        val v = ContentValues().apply {
+            put(COL_CH_NOVEL_ID, novelId); put(COL_CH_TITLE, title); put(COL_CH_CONTENT, content)
+        }
+        return writableDatabase.insert(TABLE_CHAPTERS, null, v)
+    }
+
+    fun getChaptersByNovelId(novelId: Int): Cursor {
+        return readableDatabase.rawQuery("SELECT * FROM $TABLE_CHAPTERS WHERE $COL_CH_NOVEL_ID=? ORDER BY $COL_CH_ID ASC", arrayOf(novelId.toString()))
+    }
+
+    fun updateChapter(chapterId: Int, title: String, content: String): Boolean {
+        val v = ContentValues().apply { put(COL_CH_TITLE, title); put(COL_CH_CONTENT, content) }
+        return writableDatabase.update(TABLE_CHAPTERS, v, "$COL_CH_ID=?", arrayOf(chapterId.toString())) > 0
+    }
+
+    fun deleteChapter(chapterId: Int): Boolean {
+        return writableDatabase.delete(TABLE_CHAPTERS, "$COL_CH_ID=?", arrayOf(chapterId.toString())) > 0
+    }
+
+    // --- USERS ---
+    fun getAllUploaders(): List<User> {
+        val list = mutableListOf<User>()
+        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_USERS WHERE $COL_ROLE = ?", arrayOf(ROLE_UPLOADER))
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(User(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COL_USERNAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COL_EMAIL)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(COL_COINS)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(COL_ROLE))
+                ))
+            } while (cursor.moveToNext())
+        }
+        cursor.close(); return list
+    }
+
+    fun loginUser(email: String, pass: String): User? {
+        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_USERS WHERE $COL_EMAIL=? AND $COL_PASSWORD=?", arrayOf(email.lowercase(), hashPassword(pass)))
+        return if (cursor.moveToFirst()) {
+            val user = User(cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)), cursor.getString(cursor.getColumnIndexOrThrow(COL_USERNAME)), cursor.getString(cursor.getColumnIndexOrThrow(COL_EMAIL)), cursor.getInt(cursor.getColumnIndexOrThrow(COL_COINS)), cursor.getString(cursor.getColumnIndexOrThrow(COL_ROLE)))
+            cursor.close(); user
+        } else { cursor.close(); null }
+    }
+
+    private fun hashPassword(p: String): String = MessageDigest.getInstance("SHA-256").digest(p.toByteArray()).joinToString("") { "%02x".format(it) }
+    
+    fun registerUser(username: String, email: String, pass: String): String {
         return try {
-            val db = writableDatabase
-            val values = ContentValues().apply {
-                put(COL_USERNAME, username.trim())
-                put(COL_EMAIL, email.lowercase().trim())
-                put(COL_PASSWORD, hashPassword(password))
-            }
-            val result = db.insert(TABLE_USERS, null, values)
-            db.close()
-            if (result != -1L) "success" else "error"
-        } catch (e: SQLiteConstraintException) {
-            "email_exists"
-        }
+            val v = ContentValues().apply { put(COL_USERNAME, username); put(COL_EMAIL, email.lowercase()); put(COL_PASSWORD, hashPassword(pass)); put(COL_ROLE, ROLE_USER) }
+            if (writableDatabase.insert(TABLE_USERS, null, v) != -1L) "success" else "error"
+        } catch (e: Exception) { "email_exists" }
     }
-
-    fun loginUser(email: String, password: String): User? {
-        val db = readableDatabase
-        val cursor = db.query(
-            TABLE_USERS,
-            arrayOf(COL_ID, COL_USERNAME, COL_EMAIL),
-            "$COL_EMAIL = ? AND $COL_PASSWORD = ?",
-            arrayOf(email.lowercase().trim(), hashPassword(password)),
-            null,null,null
-        )
-        val user = if (cursor.moveToFirst()) {
-            User(
-                id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
-                username = cursor.getString(cursor.getColumnIndexOrThrow(COL_USERNAME)),
-                email = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMAIL))
-            )
-        } else null
-
-        cursor.close()
-        db.close()
-        return user
-    }
-
-    fun getCoins(userId: Int): Int {
-        val db = readableDatabase
-        val cursor = db.query(
-            TABLE_USERS,
-            arrayOf(COL_COINS),
-            "$COL_ID = ?",
-            arrayOf(userId.toString()),
-            null,null,null
-        )
-        val coins = if (cursor.moveToFirst())
-            cursor.getInt(cursor.getColumnIndexOrThrow(COL_COINS)) else 0
-        cursor.close()
-        db.close()
-        return coins
-    }
-
-    fun getTransactions(userId: Int): List<Transaction> {
-        val db = readableDatabase
-        val list = mutableListOf<Transaction>()
-        val cursor = db.query(
-            TABLE_TRANSACTIONS,
-            null,
-            "$COL_TXN_USER_ID = ?",
-            arrayOf(userId.toString()),
-            null, null,
-            "$COL_TXN_ID DESC"
-        )
-        while (cursor.moveToNext()) {
-            list.add(
-                Transaction(
-                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_TXN_ID)),
-                    userId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_TXN_USER_ID)),
-                    amountVnd = cursor.getInt(cursor.getColumnIndexOrThrow(COL_TXN_AMOUNT)),
-                    coinsAdded = cursor.getInt(cursor.getColumnIndexOrThrow(COL_TXN_COINS)),
-                    date = cursor.getString(cursor.getColumnIndexOrThrow(COL_TXN_DATE))
-                )
-            )
-        }
-        cursor.close()
-        db.close()
-        return list
-    }
-
-    fun isEmailExists(email: String): Boolean {
-        val db = readableDatabase
-        val cursor = db.query(
-            TABLE_USERS,
-            arrayOf(COL_ID),
-            "$COL_EMAIL = ?",
-            arrayOf(email.lowercase().trim()),
-            null,null,null
-        )
-        val exists = cursor.count > 0
-        cursor.close()
-        db.close()
-        return exists
-    }
-
-    fun insertRechargeCode(code: String, amountVnd: Int, coins: Int): Boolean {
-        return try {
-            val db = writableDatabase
-            val values = ContentValues().apply {
-                put(COL_CODE_VALUE, code.uppercase().trim())
-                put(COL_CODE_AMOUNT, amountVnd)
-                put(COL_CODE_COINS, coins)
-                put(COL_CODE_USED, 0)
-            }
-            val result = db.insert(TABLE_CODES, null, values)
-            db.close()
-            result != -1L
-        } catch (e: Exception) { false }
-    }
-
-    fun redeemCode(userId: Int, code:String): RedeemResult {
-        val db = writableDatabase
-        val cursor = db.query(
-            TABLE_CODES, null,
-            "$COL_CODE_VALUE = ?",
-            arrayOf(code.uppercase().trim()),
-            null,null,null
-        )
-
-        if (!cursor.moveToFirst()) {
-            cursor.close(); db.close()
-            return RedeemResult.NOT_FOUND
-        }
-
-        val isUsed = cursor.getInt(cursor.getColumnIndexOrThrow(COL_CODE_USED)) == 1
-        if (isUsed) {
-            cursor.close(); db.close()
-            return RedeemResult.ALREADY_USED
-        }
-
-        val codeId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_CODE_ID))
-        val coins = cursor.getInt(cursor.getColumnIndexOrThrow(COL_CODE_COINS))
-        val amount = cursor.getInt(cursor.getColumnIndexOrThrow(COL_CODE_AMOUNT))
-        cursor.close()
-
-        return try {
-            db.beginTransaction()
-
-            val markUsed = ContentValues().apply {
-                put(COL_CODE_USED, 1)
-                put(COL_CODE_USED_BY, userId)
-            }
-            db.update(TABLE_CODES, markUsed, "$COL_CODE_ID = ?", arrayOf(codeId.toString()))
-
-            val newCoins = getCoins(userId) + coins
-            val updateCoins = ContentValues().apply { put(COL_COINS, newCoins) }
-            db.update(TABLE_USERS, updateCoins, "$COL_ID = ?", arrayOf(userId.toString()))
-
-            val txn = ContentValues().apply {
-                put(COL_TXN_USER_ID, userId)
-                put(COL_TXN_AMOUNT, amount)
-                put(COL_TXN_COINS, coins)
-                put(COL_TXN_DATE, java.text.SimpleDateFormat(
-                    "dd/MM/yyyy HH:mm", java.util.Locale.getDefault()
-                ).format(java.util.Date()))
-            }
-            db.insert(TABLE_TRANSACTIONS, null, txn)
-
-            db.setTransactionSuccessful()
-            RedeemResult.Success(coins, newCoins)
-        } catch (e: Exception) {
-            RedeemResult.ERROR
-        } finally {
-            db.endTransaction()
-            db.close()
-        }
-    }
-
-    private fun hashPassword(password: String) : String {
-        val bytes = MessageDigest
-            .getInstance("SHA-256")
-            .digest(password.toByteArray())
-        return bytes.joinToString("") {
-            "%02x".format(it)
-        }
-    }
-    // ── Cập nhật username ────────────────────────────────────
     fun updateUsername(email: String, newUsername: String): Boolean {
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put(COL_USERNAME, newUsername.trim())
-        }
-        val rows = db.update(
-            TABLE_USERS,
-            values,
-            "$COL_EMAIL = ?",
-            arrayOf(email.lowercase().trim())
-        )
-        db.close()
-        return rows > 0
+        val v = ContentValues().apply { put(COL_USERNAME, newUsername) }
+        return writableDatabase.update(TABLE_USERS, v, "$COL_EMAIL=?", arrayOf(email.lowercase())) > 0
     }
-
-    // ── Xóa tài khoản ───────────────────────────────────────
     fun deleteAccount(email: String): Boolean {
-        val db = writableDatabase
-        val rows = db.delete(
-            TABLE_USERS,
-            "$COL_EMAIL = ?",
-            arrayOf(email.lowercase().trim())
-        )
-        db.close()
-        return rows > 0
+        return writableDatabase.delete(TABLE_USERS, "$COL_EMAIL=?", arrayOf(email.lowercase())) > 0
     }
 }

@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppNovel">
         <activity
+            android:name=".ThanhVienActivity"
+            android:exported="false" />
+        <activity
             android:name=".LichSuNapActivity"
             android:exported="false" />
         <activity

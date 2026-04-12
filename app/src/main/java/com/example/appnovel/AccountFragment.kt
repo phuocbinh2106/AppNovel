@@ -242,7 +242,7 @@ class AccountFragment : Fragment() {
 
         // Đã đăng nhập: Thành viên
         binding.btnThanhVien.setOnClickListener {
-            // TODO
+            startActivity(Intent(requireContext(), ThanhVienActivity::class.java))
         }
 
         // Đã đăng nhập: Đăng xuất

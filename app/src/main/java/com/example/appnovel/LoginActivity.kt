@@ -43,48 +43,61 @@ class LoginActivity : AppCompatActivity() {
 
             btnLogin.isEnabled = false
 
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener { result ->
-                    val uid = result.user?.uid ?: return@addOnSuccessListener
+            // Kiểm tra admin/uploader trong SQLite trước
+            val dbHelper = DatabaseHelper(this)
+            val localUser = dbHelper.loginUser(email, password)
 
-                    // Lấy thông tin user từ Firestore
-                    db.collection("users").document(uid).get()
-                        .addOnSuccessListener { doc ->
-                            val username = doc.getString("username") ?: ""
-                            val coins = (doc.getLong("coins") ?: 0L).toInt()
+            if (localUser != null && (localUser.role == "admin" || localUser.role == "uploader")) {
+                // Đăng nhập admin/uploader qua SQLite
+                getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
+                    .putBoolean("isLoggedIn", true)
+                    .putString("userId", localUser.id.toString())
+                    .putString("username", localUser.username)
+                    .putString("email", localUser.email)
+                    .putString("role", localUser.role)
+                    .putInt("coins", localUser.coins)
+                    .apply()
 
-                            getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
-                                .putBoolean("isLoggedIn", true)
-                                .putString("userId", uid)
-                                .putString("username", username)
-                                .putString("email", email)
-                                .putInt("coins", coins)
-                                .apply()
+                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                })
+                finish()
+            } else {
+                // Đăng nhập user thường qua Firebase
+                auth.signInWithEmailAndPassword(email, password)
+                    .addOnSuccessListener { result ->
+                        val uid = result.user?.uid ?: return@addOnSuccessListener
+                        db.collection("users").document(uid).get()
+                            .addOnSuccessListener { doc ->
+                                val username = doc.getString("username") ?: ""
+                                val coins = (doc.getLong("coins") ?: 0L).toInt()
 
-                            Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-                            startActivity(
-                                Intent(this, MainActivity::class.java).apply {
+                                getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
+                                    .putBoolean("isLoggedIn", true)
+                                    .putString("userId", uid)
+                                    .putString("username", username)
+                                    .putString("email", email)
+                                    .putString("role", "user")
+                                    .putInt("coins", coins)
+                                    .apply()
+
+                                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, MainActivity::class.java).apply {
                                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                }
-                            )
-                            finish()
-                        }
-                        .addOnFailureListener {
-                            btnLogin.isEnabled = true
-                            Toast.makeText(this, "Lỗi lấy thông tin, thử lại!", Toast.LENGTH_SHORT).show()
-                        }
-                }
-                .addOnFailureListener { e ->
-                    btnLogin.isEnabled = true
-                    val msg = when {
-                        e.message?.contains("password is invalid") == true ||
-                                e.message?.contains("INVALID_LOGIN_CREDENTIALS") == true -> "Email hoặc mật khẩu không đúng"
-                        e.message?.contains("no user record") == true -> "Email không tồn tại"
-                        e.message?.contains("badly formatted") == true -> "Email không hợp lệ"
-                        else -> "Đăng nhập thất bại: ${e.message}"
+                                })
+                                finish()
+                            }
+                            .addOnFailureListener {
+                                btnLogin.isEnabled = true
+                                Toast.makeText(this, "Lỗi lấy thông tin!", Toast.LENGTH_SHORT).show()
+                            }
                     }
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                }
+                    .addOnFailureListener {
+                        btnLogin.isEnabled = true
+                        Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show()
+                    }
+            }
         }
 
         tvRegister.setOnClickListener {

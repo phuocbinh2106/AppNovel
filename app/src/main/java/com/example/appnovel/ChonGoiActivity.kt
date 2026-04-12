@@ -68,7 +68,7 @@ class ChonGoiActivity : AppCompatActivity() {
             val data = hashMapOf(
                 "amount" to goi.first,
                 "coins" to goi.second,
-                "userId" to userId.toString(),
+                "userId" to userId,
                 "method" to method
             )
 

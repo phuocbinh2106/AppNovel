@@ -1,5 +1,6 @@
 package com.example.appnovel
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,13 +29,19 @@ class NovelHorizontalAdapter(private val novelList: List<Novel>) :
         holder.tvTitle.text = currentNovel.title
         holder.tvStatus.text = currentNovel.status
 
-        // Sử dụng đúng thuộc tính coverUrl từ Novel.kt
         Glide.with(holder.itemView.context)
             .load(currentNovel.imageUrl)
+            .placeholder(R.drawable.ic_launcher_background)
             .into(holder.imgCover)
+
+        // SỰ KIỆN CLICK: Mở trang chi tiết truyện
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, NovelDetailActivity::class.java)
+            intent.putExtra("NOVEL_ID", currentNovel.id) // Truyền String ID
+            context.startActivity(intent)
+        }
     }
 
-    override fun getItemCount(): Int {
-        return novelList.size
-    }
+    override fun getItemCount(): Int = novelList.size
 }

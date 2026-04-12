@@ -4,11 +4,15 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.FirebaseFirestore
 
 class AdminAddChapterActivity : AppCompatActivity() {
 
+    private val firestore = FirebaseFirestore.getInstance()
     private lateinit var dbHelper: DatabaseHelper
-    private var selectedNovelId: Int = -1
+    private var selectedNovelId: String = ""
+    private var editingChapterId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,56 +20,98 @@ class AdminAddChapterActivity : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
-        val spinnerNovel = findViewById<Spinner>(R.id.spinnerNovel)
-        val edtTitle = findViewById<EditText>(R.id.edtChapterTitle)
-        val edtContent = findViewById<EditText>(R.id.edtChapterContent)
-        val btnAdd = findViewById<Button>(R.id.btnAddChapter)
+        val tvHeader = findViewById<TextView>(R.id.tvChapterHeaderTitle)
+        val autoCompleteNovel = findViewById<AutoCompleteTextView>(R.id.autoCompleteNovel)
+        val edtTitle = findViewById<TextInputEditText>(R.id.edtChapterTitle)
+        val edtPrice = findViewById<TextInputEditText>(R.id.edtChapterPrice)
+        val edtContent = findViewById<TextInputEditText>(R.id.edtChapterContent)
+        val btnSave = findViewById<Button>(R.id.btnAddChapter)
 
-        // Lấy thông tin user hiện tại để lọc truyện theo phân quyền
+        val chapter = intent.getSerializableExtra("CHAPTER_DATA") as? Chapter
+        if (chapter != null) {
+            editingChapterId = chapter.id
+            selectedNovelId = chapter.novelId
+            tvHeader.text = "CHỈNH SỬA CHAPTER"
+            btnSave.text = "CẬP NHẬT CHAPTER"
+            
+            edtTitle.setText(chapter.title)
+            edtPrice.setText(chapter.coinPrice.toString())
+            edtContent.setText(chapter.content)
+        }
+
         val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val role = sharedPrefs.getString("role", "user") ?: "user"
-        val userId = sharedPrefs.getInt("userId", -1)
+        val userId = sharedPrefs.getString("userId", "") ?: ""
 
-        // Load danh sách truyện mà người này có quyền quản lý
-        val novels = dbHelper.getNovelsByRole(role, userId)
-        val novelTitles = novels.map { it.title }
+        loadNovelList(autoCompleteNovel, role, userId)
 
-        if (novels.isEmpty()) {
-            Toast.makeText(this, "Bạn chưa được cấp quyền quản lý bộ truyện nào", Toast.LENGTH_LONG).show()
-        }
-
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, novelTitles)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerNovel.adapter = adapter
-
-        spinnerNovel.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: android.view.View?, pos: Int, p3: Long) {
-                selectedNovelId = novels[pos].id
-            }
-            override fun onNothingSelected(p0: AdapterView<*>?) {}
-        }
-
-        btnAdd.setOnClickListener {
+        btnSave.setOnClickListener {
             val title = edtTitle.text.toString().trim()
+            val priceStr = edtPrice.text.toString().trim()
+            val price = priceStr.toIntOrNull() ?: 0
             val content = edtContent.text.toString().trim()
 
-            if (selectedNovelId == -1) {
-                Toast.makeText(this, "Vui lòng chọn bộ truyện", Toast.LENGTH_SHORT).show()
+            if (selectedNovelId.isEmpty() || title.isEmpty() || content.isEmpty()) {
+                Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (title.isEmpty() || content.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đủ tên chương và nội dung", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            btnSave.isEnabled = false
+            val currentTime = System.currentTimeMillis()
+            
+            val chapterData = hashMapOf(
+                "novelId" to selectedNovelId,
+                "title" to title,
+                "content" to content,
+                "coinPrice" to price,
+                "timestamp" to (chapter?.timestamp ?: currentTime)
+            )
 
-            val result = dbHelper.addChapter(selectedNovelId, title, content)
-            if (result != -1L) {
-                Toast.makeText(this, "Xuất bản chapter thành công!", Toast.LENGTH_SHORT).show()
-                finish()
+            if (editingChapterId != null) {
+                chapterData["id"] = editingChapterId!!
+                firestore.collection("chapters").document(editingChapterId!!)
+                    .set(chapterData)
+                    .addOnSuccessListener {
+                        updateNovelTimestamp(selectedNovelId, currentTime)
+                        dbHelper.updateChapter(editingChapterId!!, title, content, price)
+                        Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
             } else {
-                Toast.makeText(this, "Lỗi khi lưu chapter", Toast.LENGTH_SHORT).show()
+                val newDoc = firestore.collection("chapters").document()
+                val newId = newDoc.id
+                chapterData["id"] = newId
+                
+                newDoc.set(chapterData)
+                    .addOnSuccessListener {
+                        updateNovelTimestamp(selectedNovelId, currentTime)
+                        dbHelper.addChapter(newId, selectedNovelId, title, content, price)
+                        Toast.makeText(this, "Xuất bản thành công!", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
             }
+        }
+    }
+
+    private fun updateNovelTimestamp(novelId: String, timestamp: Long) {
+        firestore.collection("novels").document(novelId)
+            .update("lastChapterTimestamp", timestamp)
+    }
+
+    private fun loadNovelList(autoComplete: AutoCompleteTextView, role: String, userId: String) {
+        val novels = dbHelper.getNovelsByRole(role, userId)
+        val titles = novels.map { it.title }
+        
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, titles)
+        autoComplete.setAdapter(adapter)
+
+        autoComplete.setOnItemClickListener { _, _, position, _ ->
+            selectedNovelId = novels[position].id
+        }
+
+        if (editingChapterId != null) {
+            val currentNovel = novels.find { it.id == selectedNovelId }
+            autoComplete.setText(currentNovel?.title, false)
         }
     }
 }

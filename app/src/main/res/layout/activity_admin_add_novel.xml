@@ -12,6 +12,7 @@
         android:padding="20dp">
 
         <TextView
+            android:id="@+id/tvHeaderTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="THÊM TRUYỆN MỚI"
@@ -21,14 +22,6 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="32dp"
             android:textColor="#fb923c"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Thông tin cơ bản"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
-            android:layout_marginBottom="12dp"/>
 
         <EditText
             android:id="@+id/edtNovelTitle"
@@ -51,6 +44,22 @@
             android:background="@drawable/bg_card_dark"
             android:paddingHorizontal="16dp"
             android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thể loại"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupGenre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:itemSpacing="8dp"
+            app:singleSelection="false" />
 
         <EditText
             android:id="@+id/edtNovelImageUrl"
@@ -83,19 +92,33 @@
             android:textSize="16sp"
             android:layout_marginBottom="12dp"/>
 
-        <Spinner
-            android:id="@+id/spinnerUploader"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/bg_card_dark"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="32dp"/>
+            android:layout_height="wrap_content"
+            app:boxBackgroundColor="#1a1a1a"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:hintTextColor="#fb923c"
+            android:layout_marginBottom="32dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteUploader"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:inputType="none"
+                android:hint="Chọn người quản lý"
+                android:textColor="#ffffff"
+                android:paddingHorizontal="16dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnAddNovel"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="LƯU TRUYỆN MỚI"
+            android:text="LƯU THAY ĐỔI"
             android:textSize="16sp"
             android:textStyle="bold"
             android:backgroundTint="#fb923c"

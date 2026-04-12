@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="orange_main">#fb923c</color>
+    <color name="gray_dark">#1a1a1a</color>
+    <color name="gray_text">#9ca3af</color>
+
+    <!-- Màu cho Chip -->
+    <color name="chip_selected_bg">#fb923c</color>
+    <color name="chip_unselected_bg">#262626</color>
+    <color name="chip_selected_text">#ffffff</color>
+    <color name="chip_unselected_text">#9ca3af</color>
+    <color name="chip_stroke">#3f3f46</color>
 </resources>

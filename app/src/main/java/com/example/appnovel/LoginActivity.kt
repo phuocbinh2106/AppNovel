@@ -3,7 +3,6 @@ package com.example.appnovel
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private val db = FirebaseFirestore.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +26,8 @@ class LoginActivity : AppCompatActivity() {
 
         val edtEmail = findViewById<TextInputEditText>(R.id.edtEmail)
         val edtPassword = findViewById<TextInputEditText>(R.id.edtPassword)
-        val cbRememberMe = findViewById<CheckBox>(R.id.cbRememberMe)
         val btnLogin = findViewById<MaterialButton>(R.id.btnLogin)
         val tvRegister = findViewById<TextView>(R.id.tvRegister)
-        val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
 
         btnLogin.setOnClickListener {
             val email = edtEmail.text.toString().trim()
@@ -43,69 +40,61 @@ class LoginActivity : AppCompatActivity() {
 
             btnLogin.isEnabled = false
 
-            // Kiểm tra admin/uploader trong SQLite trước
-            val dbHelper = DatabaseHelper(this)
-            val localUser = dbHelper.loginUser(email, password)
-
-            if (localUser != null && (localUser.role == "admin" || localUser.role == "uploader")) {
-                // Đăng nhập admin/uploader qua SQLite
-                getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
-                    .putBoolean("isLoggedIn", true)
-                    .putString("userId", localUser.id.toString())
-                    .putString("username", localUser.username)
-                    .putString("email", localUser.email)
-                    .putString("role", localUser.role)
-                    .putInt("coins", localUser.coins)
-                    .apply()
-
-                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                })
-                finish()
-            } else {
-                // Đăng nhập user thường qua Firebase
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener { result ->
-                        val uid = result.user?.uid ?: return@addOnSuccessListener
-                        db.collection("users").document(uid).get()
-                            .addOnSuccessListener { doc ->
-                                val username = doc.getString("username") ?: ""
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener { result ->
+                    val uid = result.user?.uid ?: return@addOnSuccessListener
+                    
+                    firestore.collection("users").document(uid).get()
+                        .addOnSuccessListener { doc ->
+                            if (doc.exists()) {
+                                val username = doc.getString("username") ?: "User"
                                 val coins = (doc.getLong("coins") ?: 0L).toInt()
+                                val role = doc.getString("role") ?: "user"
 
                                 getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
                                     .putBoolean("isLoggedIn", true)
                                     .putString("userId", uid)
                                     .putString("username", username)
                                     .putString("email", email)
-                                    .putString("role", "user")
+                                    .putString("role", role)
                                     .putInt("coins", coins)
                                     .apply()
 
-                                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this, MainActivity::class.java).apply {
-                                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                })
-                                finish()
+                                Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
+                                navigateAfterLogin()
                             }
-                            .addOnFailureListener {
-                                btnLogin.isEnabled = true
-                                Toast.makeText(this, "Lỗi lấy thông tin!", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                    .addOnFailureListener {
-                        btnLogin.isEnabled = true
-                        Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show()
-                    }
-            }
+                        }
+                        .addOnFailureListener {
+                            btnLogin.isEnabled = true
+                            Toast.makeText(this, "Lỗi kết nối server!", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                .addOnFailureListener {
+                    btnLogin.isEnabled = true
+                    Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show()
+                }
         }
 
         tvRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+    }
 
-        tvForgotPassword.setOnClickListener {
-            Toast.makeText(this, "Chức năng quên mật khẩu đang phát triển", Toast.LENGTH_SHORT).show()
+    private fun navigateAfterLogin() {
+        val returnNovelId = intent.getStringExtra("RETURN_TO_NOVEL_ID")
+        
+        if (!returnNovelId.isNullOrEmpty()) {
+            // Quay lại trang chi tiết truyện
+            val intent = Intent(this, NovelDetailActivity::class.java)
+            intent.putExtra("NOVEL_ID", returnNovelId)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        } else {
+            // Về trang chủ
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
         }
+        finish()
     }
 }

@@ -40,34 +40,36 @@ class AdminNovelListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
+        val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val role = sharedPrefs.getString("role", "") ?: ""
+        
+        // Chế độ chọn truyện để quản lý chapter
         val isSelectionMode = currentMode == "SELECT_FOR_CHAPTERS"
 
         adapter = AdminNovelAdapter(
             novelList = mutableListOf(),
-            isSelectionMode = isSelectionMode,
+            isSelectionMode = isSelectionMode || role.equals("uploader", ignoreCase = true), // Uploader cũng dùng SelectionMode để ẩn Sửa/Xóa
             onItemClick = { novel ->
-                if (isSelectionMode) {
-                    val intent = Intent(this, AdminChapterListActivity::class.java)
-                    intent.putExtra("NOVEL_ID", novel.id)
-                    intent.putExtra("NOVEL_TITLE", novel.title)
-                    startActivity(intent)
-                }
-            },
-            onEditClick = { novel ->
-                val intent = Intent(this, AdminAddNovelActivity::class.java)
-                intent.putExtra("NOVEL_DATA", novel)
+                // Cho phép uploader/admin vào quản lý chapters
+                val intent = Intent(this, AdminChapterListActivity::class.java)
+                intent.putExtra("NOVEL_ID", novel.id)
+                intent.putExtra("NOVEL_TITLE", novel.title)
                 startActivity(intent)
             },
+            onEditClick = { novel ->
+                if (role.equals("admin", ignoreCase = true)) {
+                    val intent = Intent(this, AdminAddNovelActivity::class.java)
+                    intent.putExtra("NOVEL_DATA", novel)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this, "Bạn không có quyền sửa thông tin truyện", Toast.LENGTH_SHORT).show()
+                }
+            },
             onDeleteClick = { novel ->
-                val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                val role = sharedPrefs.getString("role", "")
-                val userId = sharedPrefs.getString("userId", "")
-
-                // Cho phép xóa nếu là Admin HOẶC là người đăng truyện đó
-                if (role.equals("admin", ignoreCase = true) || (role.equals("uploader", ignoreCase = true) && novel.uploaderId == userId)) {
+                if (role.equals("admin", ignoreCase = true)) {
                     showDeleteConfirmDialog(novel)
                 } else {
-                    Toast.makeText(this, "Bạn không có quyền xóa truyện này!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Chỉ Admin mới được xóa truyện", Toast.LENGTH_SHORT).show()
                 }
             }
         )
@@ -83,17 +85,16 @@ class AdminNovelListActivity : AppCompatActivity() {
         val query = if (role.equals("admin", ignoreCase = true)) {
             firestore.collection("novels")
         } else {
+            // Uploader chỉ thấy truyện mình đăng
             firestore.collection("novels").whereEqualTo("uploaderId", userId)
         }
 
         query.addSnapshotListener { value, error ->
             if (error != null) return@addSnapshotListener
             if (value != null) {
-                // Sửa lỗi nếu document thiếu trường 'id'
                 val list = value.documents.mapNotNull { doc ->
                     val novel = doc.toObject(Novel::class.java)
                     if (novel != null) {
-                        // Nếu id trong data bị trống, lấy ID của document gán vào
                         val finalId = if (novel.id.isEmpty()) doc.id else novel.id
                         novel.copy(id = finalId)
                     } else null
@@ -106,19 +107,11 @@ class AdminNovelListActivity : AppCompatActivity() {
     private fun showDeleteConfirmDialog(novel: Novel) {
         AlertDialog.Builder(this)
             .setTitle("Xóa truyện")
-            .setMessage("Bạn có chắc muốn xóa truyện '${novel.title}'?\n(ID: ${novel.id})")
+            .setMessage("Bạn có chắc muốn xóa truyện '${novel.title}'?")
             .setPositiveButton("Xóa") { _, _ ->
-                if (novel.id.isEmpty()) {
-                    Toast.makeText(this, "Lỗi: ID truyện trống, không thể xóa", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                
                 firestore.collection("novels").document(novel.id).delete()
                     .addOnSuccessListener {
                         Toast.makeText(this, "Đã xóa thành công", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Xóa thất bại: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             }
             .setNegativeButton("Hủy", null)

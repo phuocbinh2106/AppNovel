@@ -16,6 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppNovel">
+
+        <activity
+            android:name=".NovelListActivity"
+            android:exported="false" />
+
         <activity
             android:name=".MonthlyPassActivity"
             android:exported="false" />

@@ -11,29 +11,17 @@
         android:orientation="vertical"
         android:paddingBottom="20dp">
 
-        <!-- Header: Nam | Nữ | Search | Notify -->
+        <!-- Header: Search | Notify -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="16dp"
             android:paddingVertical="12dp">
 
-            <TextView
-                android:id="@+id/tvGender"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <LinearLayout
                 android:id="@+id/layoutSearch"
                 android:layout_width="0dp"
                 android:layout_height="36dp"
-                android:layout_marginStart="16dp"
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/bg_search_bar"
                 android:gravity="center_vertical"
@@ -41,7 +29,7 @@
                 android:paddingHorizontal="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/layoutNotifyContainer"
-                app:layout_constraintStart_toEndOf="@id/tvGender"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -84,12 +72,21 @@
             </FrameLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- BANNER -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerBanner"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp" />
+
         <!-- 1. TRUYỆN NỔI BẬT -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             app:cardBackgroundColor="@color/bg_secondary"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp">
@@ -114,12 +111,15 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvSeeMoreHot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:text="Xem thêm >"
                         android:textColor="#AAAAAA"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:clickable="true"
+                        android:focusable="true"/>
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -160,12 +160,15 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvSeeMoreNew"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:text="Xem thêm >"
                         android:textColor="#AAAAAA"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:clickable="true"
+                        android:focusable="true"/>
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView

@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -37,7 +38,34 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(), NotificationActivity::class.java))
         }
 
-        // 2. LOAD DỮ LIỆU
+        // 2. BANNER VÔ HẠN (Đã khôi phục)
+        val viewPagerBanner = view.findViewById<ViewPager2>(R.id.viewPagerBanner)
+        val bannerList = listOf(
+            "https://i.pinimg.com/736x/02/49/62/024962a37e6a0228efe8f46c8afc25f6.jpg",
+            "https://i.pinimg.com/1200x/bb/ea/b5/bbeab5567ebd2bc2028f3757e9024015.jpg",
+            "https://i.pinimg.com/1200x/86/9b/9e/869b9eb4d075b381037f9e11f8470565.jpg"
+        )
+        viewPagerBanner.adapter = BannerAdapter(bannerList)
+
+        if (bannerList.isNotEmpty()) {
+            val initialPosition = Int.MAX_VALUE / 2 - (Int.MAX_VALUE / 2 % bannerList.size)
+            viewPagerBanner.setCurrentItem(initialPosition, false)
+        }
+
+        // 3. XỬ LÝ NÚT XEM THÊM
+        view.findViewById<TextView>(R.id.tvSeeMoreHot).setOnClickListener {
+            val intent = Intent(requireContext(), NovelListActivity::class.java)
+            intent.putExtra("TITLE", "TRUYỆN NỔI BẬT")
+            startActivity(intent)
+        }
+
+        view.findViewById<TextView>(R.id.tvSeeMoreNew).setOnClickListener {
+            val intent = Intent(requireContext(), NovelListActivity::class.java)
+            intent.putExtra("TITLE", "MỚI CẬP NHẬT")
+            startActivity(intent)
+        }
+
+        // 4. LOAD DỮ LIỆU CÁC MỤC KHÁC
         setupHotNovels(view)
         setupNewNovels(view)
         setupRanking(view)
@@ -111,7 +139,7 @@ class HomeFragment : Fragment() {
 
         tvWeek.setOnClickListener {
             updateTabUI(tvWeek)
-            loadRankingData("views") // Tạm thời dùng 'views' cho tất cả các tab
+            loadRankingData("views")
         }
 
         tvMonth.setOnClickListener {

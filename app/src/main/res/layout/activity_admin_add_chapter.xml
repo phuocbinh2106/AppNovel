@@ -40,7 +40,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Tên chương (Ví dụ: Chương 1: Sự khởi đầu)"
+                android:hint="Tên chương"
                 app:hintTextColor="#60a5fa"
                 app:boxStrokeColor="#60a5fa"
                 android:textColorHint="#6b7280"

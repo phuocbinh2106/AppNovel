@@ -16,7 +16,7 @@ class AdminAddNovelActivity : AppCompatActivity() {
     private var selectedUploaderId: String = ""
     private var editingNovelId: String? = null
     
-    private val genreList = listOf("Tiên Hiệp", "Huyền Huyễn", "Đô Thị", "Khoa Huyễn", "Hệ Thống", "Ngôn Tình", "Võng Du", "Hài Hước", "Linh Dị")
+    private val genreList = listOf("Tiên Hiệp", "Huyền Huyễn", "Đô Thị", "Khoa Học Viễn Tưởng", "Hệ Thống", "Ngôn Tình", "Trùng Sinh", "Hài Hước", "Kinh Dị")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

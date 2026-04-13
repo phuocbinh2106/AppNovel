@@ -40,6 +40,7 @@ class NotificationActivity : AppCompatActivity() {
     private fun loadNotifications(userId: String) {
         if (userId.isEmpty()) return
 
+        // 1. Lắng nghe thông báo Realtime
         firestore.collection("notifications")
             .whereEqualTo("userId", userId)
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -50,11 +51,11 @@ class NotificationActivity : AppCompatActivity() {
                     notifyList.addAll(value.toObjects(Notification::class.java))
                     adapter.notifyDataSetChanged()
                     binding.tvNoNotify.visibility = if (notifyList.isEmpty()) View.VISIBLE else View.GONE
-                    
-                    // Đánh dấu tất cả là đã đọc khi vào màn hình này
-                    markAllAsRead(userId)
                 }
             }
+
+        // 2. Chỉ đánh dấu đã đọc một lần duy nhất khi vào màn hình
+        markAllAsRead(userId)
     }
 
     private fun markAllAsRead(userId: String) {
@@ -63,9 +64,13 @@ class NotificationActivity : AppCompatActivity() {
             .whereEqualTo("isRead", false)
             .get()
             .addOnSuccessListener { docs ->
+                if (docs.isEmpty) return@addOnSuccessListener
+                
+                val batch = firestore.batch()
                 for (doc in docs) {
-                    doc.reference.update("isRead", true)
+                    batch.update(doc.reference, "isRead", true)
                 }
+                batch.commit()
             }
     }
 
@@ -87,7 +92,11 @@ class NotificationActivity : AppCompatActivity() {
             val item = list[position]
             holder.title.text = item.title
             holder.content.text = item.content
-            holder.title.setTextColor(if (item.isRead) 0xFF9ca3af.toInt() else 0xFFFFFFFF.toInt())
+            
+            // Cập nhật màu sắc dựa trên trạng thái đã đọc
+            val color = if (item.isRead) 0xFF9ca3af.toInt() else 0xFFFFFFFF.toInt()
+            holder.title.setTextColor(color)
+            holder.content.setTextColor(color)
         }
 
         override fun getItemCount() = list.size

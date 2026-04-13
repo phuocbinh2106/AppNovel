@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppNovel">
-
+        <activity
+            android:name=".MonthlyPassActivity"
+            android:exported="false" />
         <!-- Activities mới -->
         <activity
             android:name=".SearchActivity"
@@ -24,15 +26,12 @@
         <activity
             android:name=".NotificationActivity"
             android:exported="false" />
-
         <activity
             android:name=".ReadChapterActivity"
             android:exported="false" />
         <activity
             android:name=".NovelDetailActivity"
-            android:exported="false" />
-
-        <!-- Activities Quản trị -->
+            android:exported="false" /> <!-- Activities Quản trị -->
         <activity
             android:name=".AdminAddActivity"
             android:exported="false" />
@@ -47,9 +46,7 @@
             android:exported="false" />
         <activity
             android:name=".AdminAddChapterActivity"
-            android:exported="false" />
-
-        <!-- Các Activities khác -->
+            android:exported="false" /> <!-- Các Activities khác -->
         <activity
             android:name=".ThanhVienActivity"
             android:exported="false" />
@@ -61,8 +58,10 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="payment"
                     android:scheme="appnovel" />
@@ -88,6 +87,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

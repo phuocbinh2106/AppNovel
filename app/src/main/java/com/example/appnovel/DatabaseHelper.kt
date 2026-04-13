@@ -10,7 +10,7 @@ import java.security.MessageDigest
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         const val DATABASE_NAME = "novel.app.db"
-        const val DATABASE_VERSION = 10
+        const val DATABASE_VERSION = 11
 
         const val ROLE_USER = "user"
         const val ROLE_ADMIN = "admin"
@@ -43,6 +43,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS purchased_chapters (user_id TEXT, chapter_id TEXT, PRIMARY KEY(user_id, chapter_id))")
         db.execSQL("CREATE TABLE $TABLE_USERS ($COL_ID TEXT PRIMARY KEY, $COL_USERNAME TEXT, $COL_EMAIL TEXT UNIQUE, $COL_PASSWORD TEXT, $COL_COINS INTEGER DEFAULT 0, $COL_ROLE TEXT DEFAULT '$ROLE_USER')")
         db.execSQL("CREATE TABLE $TABLE_NOVELS ($COL_NOV_ID TEXT PRIMARY KEY, $COL_NOV_TITLE TEXT, $COL_NOV_AUTHOR TEXT, $COL_NOV_GENRES TEXT, $COL_NOV_IMAGE TEXT, $COL_NOV_DESC TEXT, $COL_NOV_STATUS TEXT, $COL_NOV_UPLOADER_ID TEXT)")
         db.execSQL("CREATE TABLE $TABLE_CHAPTERS ($COL_CH_ID TEXT PRIMARY KEY, $COL_CH_NOVEL_ID TEXT, $COL_CH_TITLE TEXT, $COL_CH_CONTENT TEXT, $COL_CH_COIN_PRICE INTEGER DEFAULT 0, FOREIGN KEY($COL_CH_NOVEL_ID) REFERENCES $TABLE_NOVELS($COL_NOV_ID))")
@@ -59,6 +60,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS purchased_chapters")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_CHAPTERS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_NOVELS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
@@ -128,14 +130,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return writableDatabase.delete(TABLE_CHAPTERS, "$COL_CH_ID=?", arrayOf(chapterId)) > 0
     }
 
-    fun loginUser(email: String, pass: String): User? {
-        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_USERS WHERE $COL_EMAIL=? AND $COL_PASSWORD=?", arrayOf(email.lowercase(), hashPassword(pass)))
-        return if (cursor.moveToFirst()) {
-            val user = User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(4), cursor.getString(5))
-            cursor.close(); user
-        } else { cursor.close(); null }
-    }
-
     fun getAllUploaders(): List<User> {
         val list = mutableListOf<User>()
         val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_USERS WHERE $COL_ROLE = ?", arrayOf(ROLE_UPLOADER))
@@ -146,6 +140,41 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         cursor.close(); return list
     }
-
     private fun hashPassword(p: String): String = MessageDigest.getInstance("SHA-256").digest(p.toByteArray()).joinToString("") { "%02x".format(it) }
+
+    fun getUserCoins(userId: String): Int {
+        val cursor = readableDatabase.rawQuery(
+            "SELECT $COL_COINS FROM $TABLE_USERS WHERE $COL_ID=?", arrayOf(userId)
+        )
+        val coins = if (cursor.moveToFirst()) cursor.getInt(0) else 0
+        cursor.close()
+        return coins
+    }
+
+    fun deductCoins(userId: String, amount: Int): Boolean {
+        val current = getUserCoins(userId)
+        if (current < amount) return false
+        val v = ContentValues().apply { put(COL_COINS, current - amount) }
+        return writableDatabase.update(TABLE_USERS, v, "$COL_ID=?", arrayOf(userId)) > 0
+    }
+
+    // Kiểm tra user đã mua chapter chưa (lưu local)
+    fun hasPurchasedChapter(userId: String, chapterId: String): Boolean {
+        val cursor = readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM purchased_chapters WHERE user_id=? AND chapter_id=?",
+            arrayOf(userId, chapterId)
+        )
+        val result = cursor.moveToFirst() && cursor.getInt(0) > 0
+        cursor.close()
+        return result
+    }
+
+    fun savePurchasedChapter(userId: String, chapterId: String) {
+        val v = ContentValues().apply {
+            put("user_id", userId)
+            put("chapter_id", chapterId)
+        }
+        writableDatabase.insertWithOnConflict("purchased_chapters", null, v,
+            android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE)
+    }
 }

@@ -34,6 +34,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
             android:padding="20dp">
 
             <EditText
@@ -74,16 +77,21 @@
                 app:itemSpacing="8dp"
                 app:singleSelection="false"/>
 
-            <EditText
-                android:id="@+id/edtNovelImageUrl"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Link ảnh bìa"
-                android:textColor="#ffffff"
-                android:textColorHint="#6b7280"
-                android:background="@drawable/bg_card_dark"
-                android:paddingHorizontal="16dp"
-                android:layout_marginBottom="12dp"/>
+            <ImageView
+                android:id="@+id/imgNovelPreview"
+                android:layout_width="120dp"
+                android:layout_height="160dp"
+                android:background="#2A2A2A"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_photo_placeholder" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSelectImage"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CHỌN ẢNH BÌA"
+                app:icon="@drawable/ic_add_photo" />
 
             <EditText
                 android:id="@+id/edtNovelDesc"

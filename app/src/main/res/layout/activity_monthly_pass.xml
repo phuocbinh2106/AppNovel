@@ -98,22 +98,24 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-                <TextView
+
+                <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/circle_gray"
-                    android:gravity="center"
-                    android:text="V"
-                    android:textColor="@color/vip_yellow_text"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:src="@drawable/ic_pass_diamond"
+                    android:scaleType="centerInside"
+                    android:padding="6dp"/>
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:text="Vé VIP cho phép bạn đọc truyện không giới hạn mà không cần trả phí thêm."
                     android:textColor="#ffffff"
                     android:textSize="14sp"
+                    android:lineSpacingExtra="4dp"
                     android:textStyle="bold"/>
             </LinearLayout>
 

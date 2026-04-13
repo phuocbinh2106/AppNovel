@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_main"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:titleTextColor="#ffffff"
+        app:title="Danh Sách Chương"/>
+
+    <!-- Thanh điều khiển: đảo chương + filter -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1a1a1a"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:gravity="center_vertical">
+
+        <!-- Nút đảo chương -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnToggleOrder"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Đảo chương ↑"
+            android:textSize="12sp"
+            android:textColor="#60a5fa"
+            app:strokeColor="#60a5fa"
+            app:cornerRadius="18dp"/>
+
+        <!-- Spacer -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <!-- Số chương -->
+        <TextView
+            android:id="@+id/tvTotalChapter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 Chương"
+            android:textColor="#9ca3af"
+            android:textSize="13sp"/>
+
+    </LinearLayout>
+
+    <!-- Danh sách chương -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChapterList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

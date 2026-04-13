@@ -163,17 +163,26 @@ class MonthlyPassActivity : AppCompatActivity() {
             val snapshot = transaction.get(userRef)
             val currentVipUntil = snapshot.getTimestamp("vipUntil")?.toDate() ?: Date()
 
+            // Lấy EXP hiện tại của User trên Firebase (Nếu chưa có thì mặc định là 0)
+            val currentExp = snapshot.getLong("exp") ?: 0L
+
             // Nếu vẫn còn VIP, cộng dồn tháng. Nếu hết, tính từ ngày hôm nay.
             val startFrom = if (currentVipUntil.after(Date())) currentVipUntil else Date()
             val calendar = Calendar.getInstance()
             calendar.time = startFrom
             calendar.add(Calendar.MONTH, pkg.months)
 
+            // Cập nhật các dữ liệu cơ bản
             transaction.update(userRef, "coins", currentCoins - pkg.price)
             transaction.update(userRef, "vipUntil", Timestamp(calendar.time))
-            transaction.update(userRef, "vipLevel", pkg.vipLevel) // Update cấp VIP
+            transaction.update(userRef, "vipLevel", pkg.vipLevel)
 
-            // Có thể cộng thêm EXP vào data nếu bạn có trường exp
+            // --- 2 DÒNG ĐƯỢC THÊM MỚI ---
+            // 1. Lưu tên gói để trang Account hiển thị chính xác (VD: "Gói: Thanh Đồng")
+            transaction.update(userRef, "vipName", pkg.shortName)
+
+            // 2. Cộng lượng EXP khổng lồ của gói VIP vào EXP hiện tại để user thăng cấp Cảnh Giới
+            transaction.update(userRef, "exp", currentExp + pkg.exp)
 
         }.addOnSuccessListener {
             Toast.makeText(this, "Kích hoạt gói ${pkg.shortName} thành công!", Toast.LENGTH_LONG).show()

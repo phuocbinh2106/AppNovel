@@ -22,9 +22,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".MonthlyPassActivity"
+            android:name=".ChapterListActivity"
             android:exported="false" />
-        <!-- Activities mới -->
+        <activity
+            android:name=".MonthlyPassActivity"
+            android:exported="false" /> <!-- Activities mới -->
         <activity
             android:name=".SearchActivity"
             android:exported="false" />

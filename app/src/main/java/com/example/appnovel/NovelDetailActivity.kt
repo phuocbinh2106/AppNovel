@@ -53,6 +53,7 @@ class NovelDetailActivity : AppCompatActivity() {
         loadAverageRating()
         loadFollowCount()
 
+        // ── Đọc từ chương đầu ──
         binding.btnReadFirst.setOnClickListener {
             db.getChaptersByNovelId(novelId).use { cursor ->
                 if (cursor.moveToFirst()) {
@@ -61,6 +62,16 @@ class NovelDetailActivity : AppCompatActivity() {
                     Toast.makeText(this, "Truyện chưa có chương nào", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+
+        // ── Mở danh sách chương riêng ──
+        binding.btnViewAllChapters.setOnClickListener {
+            startActivity(
+                Intent(this, ChapterListActivity::class.java)
+                    .putExtra("NOVEL_ID",    novelId)
+                    .putExtra("NOVEL_TITLE", binding.tvTitle.text.toString())
+                    .putExtra("NOVEL_COVER", binding.imgCover.tag?.toString() ?: "")
+            )
         }
 
         binding.btnOpenRating.setOnClickListener {
@@ -96,7 +107,6 @@ class NovelDetailActivity : AppCompatActivity() {
                 binding.tvStatus.text = novel.status
                 binding.tvViews.text = formatCount(novel.views)
 
-                // Cập nhật nút đọc với tên chương đầu
                 db.getChaptersByNovelId(novelId).use { cursor ->
                     val count = cursor.count
                     binding.tvChapterCount.text = count.toString()
@@ -107,8 +117,7 @@ class NovelDetailActivity : AppCompatActivity() {
                     }
                 }
 
-                Glide.with(this).load(novel.imageUrl)
-                    .into(binding.imgCover)
+                Glide.with(this).load(novel.imageUrl).into(binding.imgCover)
                 binding.imgCover.tag = novel.imageUrl
 
                 binding.chipGroupGenre.removeAllViews()
@@ -121,7 +130,6 @@ class NovelDetailActivity : AppCompatActivity() {
                     binding.chipGroupGenre.addView(chip)
                 }
 
-                // Load truyện tương tự sau khi có genres
                 loadSimilarNovels(novel.genres)
             }
     }
@@ -134,14 +142,10 @@ class NovelDetailActivity : AppCompatActivity() {
                 val count = docs.size()
                 binding.tvRatingCount.text = "($count)"
                 binding.tvRatingCountLabel.text = "$count lượt"
-
                 if (count > 0) {
                     var totalScore = 0f
-                    for (doc in docs) {
-                        totalScore += doc.getDouble("score")?.toFloat() ?: 0f
-                    }
-                    val avg = totalScore / count
-                    binding.tvRatingScore.text = String.format(Locale.US, "%.1f", avg)
+                    for (doc in docs) totalScore += doc.getDouble("score")?.toFloat() ?: 0f
+                    binding.tvRatingScore.text = String.format(Locale.US, "%.1f", totalScore / count)
                 }
             }
     }
@@ -153,17 +157,10 @@ class NovelDetailActivity : AppCompatActivity() {
                 Toast.makeText(this, "Vui lòng chọn số sao", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            val ratingData = hashMapOf(
-                "userId" to userId,
-                "novelId" to novelId,
-                "score" to rating,
-                "timestamp" to System.currentTimeMillis()
-            )
-
             firestore.collection("ratings")
                 .document("${userId}_${novelId}")
-                .set(ratingData)
+                .set(hashMapOf("userId" to userId, "novelId" to novelId,
+                    "score" to rating, "timestamp" to System.currentTimeMillis()))
                 .addOnSuccessListener {
                     Toast.makeText(this, "Cảm ơn bạn đã đánh giá!", Toast.LENGTH_SHORT).show()
                     binding.layoutRatingInput.visibility = View.GONE
@@ -175,14 +172,11 @@ class NovelDetailActivity : AppCompatActivity() {
 
     private fun checkUserRating() {
         if (userId.isEmpty()) return
-        firestore.collection("ratings")
-            .document("${userId}_${novelId}")
-            .get()
+        firestore.collection("ratings").document("${userId}_${novelId}").get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     binding.btnOpenRating.text = "Sửa đánh giá"
-                    val score = doc.getDouble("score")?.toFloat() ?: 0f
-                    binding.ratingBarUser.rating = score
+                    binding.ratingBarUser.rating = doc.getDouble("score")?.toFloat() ?: 0f
                 }
             }
     }
@@ -192,26 +186,21 @@ class NovelDetailActivity : AppCompatActivity() {
         val chapters = mutableListOf<Chapter>()
         if (cursor.moveToFirst()) {
             do {
-                chapters.add(
-                    Chapter(
-                        cursor.getString(0),
-                        novelId,
-                        cursor.getString(2) ?: "",
-                        "",
-                        cursor.getInt(4)
-                    )
-                )
+                chapters.add(Chapter(
+                    cursor.getString(0), novelId,
+                    cursor.getString(2) ?: "", "", cursor.getInt(4)
+                ))
             } while (cursor.moveToNext())
         }
         cursor.close()
         binding.rvChapters.layoutManager = LinearLayoutManager(this)
+        // Preview 3 chương mới nhất
         binding.rvChapters.adapter = ChapterAdapter(chapters.takeLast(3).reversed())
     }
 
     private fun checkFollowingStatus() {
         if (userId.isEmpty()) return
-        firestore.collection("follows")
-            .document("${userId}_${novelId}")
+        firestore.collection("follows").document("${userId}_${novelId}")
             .addSnapshotListener { snap, _ ->
                 isFollowing = snap?.exists() == true
                 updateFollowButtonUI()
@@ -219,11 +208,9 @@ class NovelDetailActivity : AppCompatActivity() {
     }
 
     private fun updateFollowButtonUI() {
-        binding.btnFollow.imageTintList = if (isFollowing) {
-            ColorStateList.valueOf(Color.parseColor("#facc15"))
-        } else {
-            ColorStateList.valueOf(Color.parseColor("#9ca3af"))
-        }
+        binding.btnFollow.imageTintList = ColorStateList.valueOf(
+            if (isFollowing) Color.parseColor("#facc15") else Color.parseColor("#9ca3af")
+        )
         binding.btnFollow.setOnClickListener { toggleFollowOnCloud() }
     }
 
@@ -232,9 +219,7 @@ class NovelDetailActivity : AppCompatActivity() {
             Toast.makeText(this, "Vui lòng đăng nhập để theo dõi", Toast.LENGTH_SHORT).show()
             return
         }
-
         val docRef = firestore.collection("follows").document("${userId}_${novelId}")
-
         if (isFollowing) {
             docRef.delete().addOnSuccessListener {
                 Toast.makeText(this, "Đã bỏ theo dõi", Toast.LENGTH_SHORT).show()
@@ -242,24 +227,18 @@ class NovelDetailActivity : AppCompatActivity() {
             }
         } else {
             val novel = currentNovel ?: return
-            val followData = hashMapOf(
-                "userId" to userId,
-                "novelId" to novelId,
-                "novelTitle" to novel.title,
-                "novelCover" to novel.imageUrl,
-                "timestamp" to System.currentTimeMillis()
-            )
-            docRef.set(followData).addOnSuccessListener {
-                Toast.makeText(this, "Đã thêm vào Tủ truyện", Toast.LENGTH_SHORT).show()
-                loadFollowCount()
-            }
+            docRef.set(hashMapOf("userId" to userId, "novelId" to novelId,
+                "novelTitle" to novel.title, "novelCover" to novel.imageUrl,
+                "timestamp" to System.currentTimeMillis()))
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Đã thêm vào Tủ truyện", Toast.LENGTH_SHORT).show()
+                    loadFollowCount()
+                }
         }
     }
 
     private fun loadFollowCount() {
-        firestore.collection("follows")
-            .whereEqualTo("novelId", novelId)
-            .get()
+        firestore.collection("follows").whereEqualTo("novelId", novelId).get()
             .addOnSuccessListener { docs ->
                 binding.tvFollowCount.text = formatCount(docs.size().toLong())
             }
@@ -267,13 +246,9 @@ class NovelDetailActivity : AppCompatActivity() {
 
     private fun loadSimilarNovels(genres: List<String>) {
         if (genres.isEmpty()) return
-        firestore.collection("novels")
-            .whereArrayContainsAny("genres", genres)
-            .limit(6)
-            .get()
+        firestore.collection("novels").whereArrayContainsAny("genres", genres).limit(6).get()
             .addOnSuccessListener { docs ->
-                val list = docs.toObjects(Novel::class.java)
-                    .filter { it.id != novelId }
+                val list = docs.toObjects(Novel::class.java).filter { it.id != novelId }
                 if (list.isNotEmpty()) {
                     binding.layoutSimilar.visibility = View.VISIBLE
                     binding.rvSimilar.layoutManager =
@@ -283,33 +258,32 @@ class NovelDetailActivity : AppCompatActivity() {
             }
     }
 
+    // ── Preview 3 chương mới — dùng item_chapter.xml có sẵn ──────────────────
     inner class ChapterAdapter(private val list: List<Chapter>) :
         RecyclerView.Adapter<ChapterAdapter.ViewHolder>() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val tvTitle: TextView = view.findViewById(android.R.id.text1)
+            val tvTitle : TextView = view.findViewById(R.id.tvChapterTitle)
+            val tvPrice : TextView = view.findViewById(R.id.tvChapterPrice)
+            val tvLock  : TextView = view.findViewById(R.id.tvLock)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(android.R.layout.simple_list_item_1, parent, false)
-            )
+            ViewHolder(LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_chapter, parent, false))
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val chapter = list[position]
+            holder.tvTitle.text = chapter.title
 
-            // 🔒 Hiển thị icon khóa và giá xu nếu chapter có phí
-            holder.tvTitle.text = if (chapter.coinPrice > 0)
-                "🔒 ${chapter.title}  (${chapter.coinPrice} xu)"
-            else
-                chapter.title
-
-            // Màu vàng = có phí, trắng = miễn phí
-            holder.tvTitle.setTextColor(
-                if (chapter.coinPrice > 0) Color.parseColor("#facc15")
-                else Color.WHITE
-            )
+            if (chapter.coinPrice > 0) {
+                holder.tvPrice.text       = "${chapter.coinPrice} xu"
+                holder.tvPrice.visibility = View.VISIBLE
+                holder.tvLock.visibility  = View.VISIBLE
+            } else {
+                holder.tvPrice.visibility = View.GONE
+                holder.tvLock.visibility  = View.GONE
+            }
 
             holder.itemView.setOnClickListener { openChapter(chapter.id) }
         }
@@ -320,18 +294,16 @@ class NovelDetailActivity : AppCompatActivity() {
     private fun openChapter(id: String) {
         startActivity(
             Intent(this, ReadChapterActivity::class.java)
-                .putExtra("CHAPTER_ID", id)
-                .putExtra("NOVEL_ID", novelId)
-                .putExtra("NOVEL_TITLE", binding.tvTitle.text.toString())
-                .putExtra("NOVEL_COVER", binding.imgCover.tag?.toString() ?: "")
+                .putExtra("CHAPTER_ID",   id)
+                .putExtra("NOVEL_ID",     novelId)
+                .putExtra("NOVEL_TITLE",  binding.tvTitle.text.toString())
+                .putExtra("NOVEL_COVER",  binding.imgCover.tag?.toString() ?: "")
         )
     }
 
-    private fun formatCount(count: Long): String {
-        return when {
-            count >= 1_000_000 -> String.format("%.1fM", count / 1_000_000.0)
-            count >= 1_000 -> String.format("%.1fk", count / 1_000.0)
-            else -> count.toString()
-        }
+    private fun formatCount(count: Long): String = when {
+        count >= 1_000_000 -> String.format("%.1fM", count / 1_000_000.0)
+        count >= 1_000     -> String.format("%.1fk", count / 1_000.0)
+        else               -> count.toString()
     }
 }

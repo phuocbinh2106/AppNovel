@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0f0f0f"
+    android:background="@color/bg_main"
     tools:context=".AdminNovelListActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -12,16 +12,21 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="#1a1a1a"
+        app:navigationIcon="@drawable/ic_arrow_back"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="DANH SÁCH TRUYỆN"
             android:textColor="#ffffff"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginEnd="48dp"/>
+
     </androidx.appcompat.widget.Toolbar>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAdminNovels"

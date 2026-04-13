@@ -1,5 +1,7 @@
 package com.example.appnovel
 
+import android.R.id.list
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.appnovel.databinding.FragmentTuTruyenBinding
+import com.google.firebase.firestore.FirebaseFirestore
 
 data class TuTruyenItem(
     val novelId: String,
@@ -42,20 +45,46 @@ class TuTruyenFragment : Fragment() {
     }
 
     private fun loadTuTruyen() {
-        val prefs = requireActivity()
-            .getSharedPreferences("TuTruyen", android.content.Context.MODE_PRIVATE)
-        val json = prefs.getString("tu_truyen", "[]") ?: "[]"
-        val list = parseTuTruyen(json)
+        val userId = requireActivity()
+            .getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            .getString("userId", "") ?: ""
 
-        if (list.isEmpty()) {
+        if (userId.isEmpty()) {
             binding.tvEmpty.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
-        } else {
-            binding.tvEmpty.visibility = View.GONE
-            binding.recyclerView.visibility = View.VISIBLE
-            binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            binding.recyclerView.adapter = TuTruyenAdapter(list)
+            return
         }
+
+        FirebaseFirestore.getInstance()
+            .collection("follows")
+            .whereEqualTo("userId", userId)
+            // Bỏ orderBy để không cần index
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    android.util.Log.e("TuTruyen", "Error: ${error.message}")
+                    binding.tvEmpty.visibility = View.VISIBLE
+                    return@addSnapshotListener
+                }
+
+                val list = value?.documents?.mapNotNull { doc ->
+                    TuTruyenItem(
+                        novelId = doc.getString("novelId") ?: return@mapNotNull null,
+                        title = doc.getString("novelTitle") ?: "",
+                        coverUrl = doc.getString("novelCover") ?: "",
+                        lastChapter = doc.getString("lastChapter") ?: "Chưa đọc"
+                    )
+                } ?: emptyList()
+
+                if (list.isEmpty()) {
+                    binding.tvEmpty.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.GONE
+                } else {
+                    binding.tvEmpty.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                    binding.recyclerView.adapter = TuTruyenAdapter(list)
+                }
+            }
     }
 
     private fun parseTuTruyen(json: String): List<TuTruyenItem> {
@@ -96,6 +125,16 @@ class TuTruyenFragment : Fragment() {
                 .load(item.coverUrl)
                 .placeholder(R.drawable.ic_book)
                 .into(holder.imgCover)
+
+            // Thêm click để mở NovelDetailActivity
+            holder.itemView.setOnClickListener {
+                val intent = android.content.Intent(
+                    holder.itemView.context,
+                    NovelDetailActivity::class.java
+                )
+                intent.putExtra("NOVEL_ID", item.novelId)
+                holder.itemView.context.startActivity(intent)
+            }
         }
 
         override fun getItemCount() = list.size

@@ -7,10 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.appnovel.databinding.ActivityReadChapterBinding
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.apply
 
 class ReadChapterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReadChapterBinding
     private lateinit var db: DatabaseHelper
+    private var novelTitle = ""
+    private var novelCover = ""
     private var chapterId = ""
     private var novelId = ""
     private var chapterList = listOf<Chapter>()
@@ -24,6 +27,8 @@ class ReadChapterActivity : AppCompatActivity() {
         db = DatabaseHelper(this)
         chapterId = intent.getStringExtra("CHAPTER_ID") ?: ""
         novelId = intent.getStringExtra("NOVEL_ID") ?: ""
+        novelTitle = intent.getStringExtra("NOVEL_TITLE") ?: ""
+        novelCover = intent.getStringExtra("NOVEL_COVER") ?: ""
 
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
@@ -85,13 +90,10 @@ class ReadChapterActivity : AppCompatActivity() {
     }
 
     private fun saveHistory(chapter: Chapter) {
-        val novel = db.getAllNovels().find { it.id == novelId } ?: return
         val prefs = getSharedPreferences("LichSuDoc", Context.MODE_PRIVATE)
         val json = prefs.getString("lich_su", "[]") ?: "[]"
-
         val arr = try { JSONArray(json) } catch (e: Exception) { JSONArray() }
 
-        // Xóa entry cũ nếu có
         val newArr = JSONArray()
         for (i in 0 until arr.length()) {
             if (arr.getJSONObject(i).getString("novelId") != novelId) {
@@ -99,33 +101,26 @@ class ReadChapterActivity : AppCompatActivity() {
             }
         }
 
-        // Thêm entry mới vào đầu
         val obj = JSONObject().apply {
             put("novelId", novelId)
-            put("title", novel.title)
-            put("coverUrl", novel.imageUrl)
+            put("title", novelTitle)
+            put("coverUrl", novelCover)
             put("lastChapter", chapter.title)
             put("lastChapterId", chapter.id)
             put("timestamp", System.currentTimeMillis())
         }
 
-        // Ghép mới vào đầu
         val finalArr = JSONArray()
         finalArr.put(obj)
         for (i in 0 until newArr.length()) {
             finalArr.put(newArr.getJSONObject(i))
         }
 
-        // Giới hạn 50 truyện trong lịch sử
         val limitedArr = JSONArray()
         for (i in 0 until minOf(finalArr.length(), 50)) {
             limitedArr.put(finalArr.getJSONObject(i))
         }
-
         prefs.edit().putString("lich_su", limitedArr.toString()).apply()
-
-        // Cập nhật tủ truyện nếu đang theo dõi
-        updateTuTruyen(novel, chapter)
     }
 
     private fun updateTuTruyen(novel: Novel, chapter: Chapter) {

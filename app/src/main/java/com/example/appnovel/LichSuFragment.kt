@@ -100,6 +100,15 @@ class LichSuFragment : Fragment() {
                 .load(item.coverUrl)
                 .placeholder(R.drawable.ic_book)
                 .into(holder.imgCover)
+
+            holder.itemView.setOnClickListener {
+                val intent = android.content.Intent(
+                    holder.itemView.context,
+                    NovelDetailActivity::class.java
+                )
+                intent.putExtra("NOVEL_ID", item.novelId)
+                holder.itemView.context.startActivity(intent)
+            }
         }
 
         override fun getItemCount() = list.size

@@ -30,6 +30,11 @@ class AdminAddNovelActivity : AppCompatActivity() {
         val edtDesc = findViewById<EditText>(R.id.edtNovelDesc)
         val autoCompleteUploader = findViewById<AutoCompleteTextView>(R.id.autoCompleteUploader)
         val btnSave = findViewById<Button>(R.id.btnAddNovel)
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbar.setNavigationOnClickListener { finish() }
 
         setupGenreChips(chipGroupGenre)
 

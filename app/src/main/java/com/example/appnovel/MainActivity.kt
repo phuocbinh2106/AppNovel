@@ -20,10 +20,7 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> replaceFragment(HomeFragment())
-                R.id.nav_library -> {
-                    // Nếu bạn chưa tạo LibraryFragment, hãy để tạm HomeFragment để tránh crash
-                    // replaceFragment(LibraryFragment())
-                }
+                R.id.nav_library -> {replaceFragment(LibraryFragment())}
                 R.id.nav_profile -> {replaceFragment(AccountFragment())}
             }
             true

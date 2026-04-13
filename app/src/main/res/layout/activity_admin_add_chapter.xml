@@ -1,142 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0f0f0f"
-    android:fillViewport="true">
+    android:background="@color/bg_main"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_main"
+        app:navigationIcon="@drawable/ic_arrow_back">
 
         <TextView
             android:id="@+id/tvChapterHeaderTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="THÊM CHAPTER MỚI"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"
-            android:textColor="#60a5fa"/>
+            android:gravity="center"
+            android:textColor="#60a5fa"
+            android:layout_marginEnd="48dp"/>
 
-        <!-- Section: Chọn truyện -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chọn bộ truyện"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="12dp"/>
+    </androidx.appcompat.widget.Toolbar>
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Danh sách truyện quản lý"
-            app:hintTextColor="#60a5fa"
-            app:boxStrokeColor="#60a5fa"
-            android:textColorHint="#6b7280"
-            android:layout_marginBottom="24dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <AutoCompleteTextView
-                android:id="@+id/autoCompleteNovel"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
-                android:textColor="#ffffff"
-                android:padding="16dp"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Tên chương (Ví dụ: Chương 1: Sự khởi đầu)"
+                app:hintTextColor="#60a5fa"
+                app:boxStrokeColor="#60a5fa"
+                android:textColorHint="#6b7280"
+                android:layout_marginBottom="16dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp">
 
-        <!-- Section: Thông tin chapter -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Tên chương (Ví dụ: Chương 1: Sự khởi đầu)"
-            app:hintTextColor="#60a5fa"
-            app:boxStrokeColor="#60a5fa"
-            android:textColorHint="#6b7280"
-            android:layout_marginBottom="16dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtChapterTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ffffff"
+                    android:inputType="textCapSentences"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtChapterTitle"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:inputType="textCapSentences"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Giá xu (0 nếu miễn phí)"
+                app:hintTextColor="#60a5fa"
+                app:boxStrokeColor="#60a5fa"
+                android:textColorHint="#6b7280"
+                android:layout_marginBottom="16dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Giá xu (0 nếu miễn phí)"
-            app:hintTextColor="#60a5fa"
-            app:boxStrokeColor="#60a5fa"
-            android:textColorHint="#6b7280"
-            android:layout_marginBottom="16dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtChapterPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#ffffff"
+                    android:inputType="number"
+                    android:text="0"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtChapterPrice"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:inputType="number"
-                android:text="0"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Nội dung chương truyện"
+                app:hintTextColor="#60a5fa"
+                app:boxStrokeColor="#60a5fa"
+                android:textColorHint="#6b7280"
+                android:layout_marginBottom="32dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nội dung chương truyện"
-            app:hintTextColor="#60a5fa"
-            app:boxStrokeColor="#60a5fa"
-            android:textColorHint="#6b7280"
-            android:layout_marginBottom="32dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusTopStart="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtChapterContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:textColor="#ffffff"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtChapterContent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddChapter"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="60dp"
+                android:text="XUẤT BẢN CHAPTER"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#60a5fa"
                 android:textColor="#ffffff"
-                android:gravity="top"
-                android:inputType="textMultiLine"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="32dp"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAddChapter"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="XUẤT BẢN CHAPTER"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:backgroundTint="#60a5fa"
-            android:textColor="#ffffff"
-            app:cornerRadius="12dp"
-            android:layout_marginBottom="32dp"/>
+        </LinearLayout>
+    </ScrollView>
 
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

@@ -56,4 +56,11 @@
     <color name="purple_400">#C084FC</color>
     <color name="purple_300">#A78BFA</color>
     <color name="pink_400">#F472B6</color>
+
+    <color name="bg_vip_dark">#121010</color>
+    <color name="bg_vip_dialog">#252A34</color>
+    <color name="vip_yellow_card">#FFE58F</color>
+    <color name="vip_yellow_text">#D4A64E</color>
+    <color name="vip_red_button">#FE2C55</color>
+    <color name="vip_border">#403A36</color>
 </resources>

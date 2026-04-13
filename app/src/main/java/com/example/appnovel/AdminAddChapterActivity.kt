@@ -1,11 +1,14 @@
 package com.example.appnovel
 
-import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class AdminAddChapterActivity : AppCompatActivity() {
 
@@ -13,6 +16,13 @@ class AdminAddChapterActivity : AppCompatActivity() {
     private lateinit var dbHelper: DatabaseHelper
     private var selectedNovelId: String = ""
     private var editingChapterId: String? = null
+
+    // 1. Khai báo trình chọn file để lấy file .txt
+    private val pickFileLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            readTextFromUri(uri)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +40,14 @@ class AdminAddChapterActivity : AppCompatActivity() {
         val edtPrice = findViewById<TextInputEditText>(R.id.edtChapterPrice)
         val edtContent = findViewById<TextInputEditText>(R.id.edtChapterContent)
         val btnSave = findViewById<Button>(R.id.btnAddChapter)
+
+        // Tìm nút Tải file TXT mà chúng ta vừa thêm vào giao diện
+        val btnUploadTxt = findViewById<Button>(R.id.btnUploadTxt)
+
+        // 2. Gắn sự kiện mở trình chọn file
+        btnUploadTxt.setOnClickListener {
+            pickFileLauncher.launch("text/plain")
+        }
 
         // Lấy novelId từ Intent — đã được chọn từ màn hình trước
         selectedNovelId = intent.getStringExtra("NOVEL_ID") ?: ""
@@ -97,6 +115,25 @@ class AdminAddChapterActivity : AppCompatActivity() {
                         Toast.makeText(this, "Lỗi xuất bản!", Toast.LENGTH_SHORT).show()
                     }
             }
+        }
+    }
+
+    // 3. Hàm xử lý đọc chữ từ file txt và đổ vào ô Content
+    private fun readTextFromUri(uri: Uri) {
+        try {
+            val inputStream = contentResolver.openInputStream(uri)
+            if (inputStream != null) {
+                val reader = BufferedReader(InputStreamReader(inputStream))
+                val text = reader.use { it.readText() }
+
+                // Đổ chữ vào EditText
+                val edtContent = findViewById<TextInputEditText>(R.id.edtChapterContent)
+                edtContent.setText(text)
+
+                Toast.makeText(this, "Tải nội dung thành công!", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Lỗi khi đọc file: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -86,48 +86,6 @@
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
 
-            <!-- Thay đổi màu nền -->
-            <LinearLayout
-                android:id="@+id/btnChangeBackground"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_card_dark"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/circle_gray"
-                        android:padding="8dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_star"
-                        app:tint="#eab308" />
-                </FrameLayout>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:text="Thay đổi màu nền"
-                    android:textColor="#ffffff"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_arrow_right"
-                    app:tint="#9ca3af" />
-            </LinearLayout>
-
             <!-- Phiên bản -->
             <TextView
                 android:layout_width="match_parent"
@@ -223,13 +181,14 @@
                         android:layout_height="40dp"
                         android:layout_marginEnd="12dp">
 
-                        <TextView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                        <ImageView
+                            android:id="@+id/imgRankIcon"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:background="@drawable/circle_white_alpha"
-                            android:gravity="center"
-                            android:text="🎯"
-                            android:textSize="20sp" />
+                            android:padding="6dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_lv1" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -242,7 +201,7 @@
                             android:id="@+id/tvRankName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bắt Nhập Lưu Võ Giả"
+                            android:text="Bất Nhập Lưu Võ Giả"
                             android:textColor="#ffffff"
                             android:textSize="14sp" />
 
@@ -254,6 +213,7 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/tvExpProgress"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
@@ -269,7 +229,7 @@
                                 android:layout_weight="1"
                                 android:max="100"
                                 android:progress="0"
-                                android:progressBackgroundTint="#ffffff33"
+                                android:progressBackgroundTint="#33FFFFFF"
                                 android:progressTint="#4ade80" />
                         </LinearLayout>
                     </LinearLayout>
@@ -343,6 +303,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvVipTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
@@ -351,6 +312,7 @@
                         android:textSize="15sp" />
 
                     <TextView
+                        android:id="@+id/tvVipExpiry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Hiệu lực : Đã hết hạn"
@@ -715,49 +677,6 @@
                     android:layout_height="wrap_content"
                     android:checked="false"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
-            </LinearLayout>
-
-            <!-- Thay đổi màu nền -->
-            <LinearLayout
-                android:id="@+id/btnChangeBackgroundColor"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_card_dark"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="12dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/circle_gray"
-                        android:padding="8dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_star"
-                        app:tint="#eab308" />
-                </FrameLayout>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Thay đổi màu nền"
-                    android:textColor="#ffffff"
-                    android:textSize="15sp" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_arrow_right"
-                    app:tint="#9ca3af" />
             </LinearLayout>
 
             <!-- QUẢN LÝ HỆ THỐNG (THÊM LẠI Ở ĐÂY) -->

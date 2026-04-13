@@ -6,11 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.appnovel.databinding.ActivityThanhVienBinding
@@ -19,49 +17,50 @@ data class  CanhGioi(
     val level: Int,
     val ten: String,
     val kn: Long,
-    val mau: String
+    val mau: String,
+    val iconRes: Int
 )
 
 class ThanhVienActivity : AppCompatActivity() {
     private lateinit var binding: ActivityThanhVienBinding
 
     private val danhSachCanhGioi = listOf(
-        CanhGioi(36, "Hóa Thần Sơ Kỳ",       300_000_000, "#8B4513"),
-        CanhGioi(35, "Xung Kích Hóa Thần",    100_000_000, "#8B4513"),
-        CanhGioi(34, "Rèn Luyện Thần Thức",    80_000_000, "#8B4513"),
-        CanhGioi(33, "Nhục Thân Đàn Hóa",      60_000_000, "#8B4513"),
-        CanhGioi(32, "Nguyên Anh Hậu Kỳ",      50_000_000, "#6B2D6B"),
-        CanhGioi(31, "Nguyên Anh Trung Kỳ",    30_000_000, "#6B2D6B"),
-        CanhGioi(30, "Nguyên Anh Sơ Kỳ",       10_000_000, "#6B2D6B"),
-        CanhGioi(29, "Phá Đan Ngưng Anh",      14_000_000, "#6B2D6B"),
-        CanhGioi(28, "Kim Đan Đại Viên Mãn",    7_000_000, "#1a4a4a"),
-        CanhGioi(27, "Kim Đan Hậu Kỳ",          5_000_000, "#1a4a4a"),
-        CanhGioi(26, "Kim Đan Trung Kỳ",        3_000_000, "#1a4a4a"),
-        CanhGioi(25, "Kim Đan Sơ Kỳ",           1_000_000, "#1a4a4a"),
-        CanhGioi(24, "Kết Đan",                   400_000, "#4a6b3a"),
-        CanhGioi(23, "Đạo Cơ Đại Viên Mãn",      300_000, "#4a6b3a"),
-        CanhGioi(22, "Đạo Cơ Hậu Kỳ",            200_000, "#4a6b3a"),
-        CanhGioi(21, "Đạo Cơ Trung Kỳ",          100_000, "#4a6b3a"),
-        CanhGioi(20, "Đạo Cơ Sơ Kỳ",              70_000, "#1e3a5f"),
-        CanhGioi(19, "Ngưng Kết Đạo Cơ",          30_000, "#1e3a5f"),
-        CanhGioi(18, "Luyện Khí Tầng 12",          30_000, "#1e3a5f"),
-        CanhGioi(17, "Luyện Khí Tầng 11",          27_000, "#1e3a5f"),
-        CanhGioi(16, "Luyện Khí Tầng 10",          25_000, "#6b2020"),
-        CanhGioi(15, "Luyện Khí Tầng 9",           20_000, "#6b2020"),
-        CanhGioi(14, "Luyện Khí Tầng 8",           17_000, "#6b2020"),
-        CanhGioi(13, "Luyện Khí Tầng 7",           14_000, "#6b2020"),
-        CanhGioi(12, "Luyện Khí Tầng 6",           10_000, "#1e4a2a"),
-        CanhGioi(11, "Luyện Khí Tầng 5",            8_000, "#1e4a2a"),
-        CanhGioi(10, "Luyện Khí Tầng 4",            7_000, "#1e4a2a"),
-        CanhGioi(9,  "Luyện Khí Tầng 3",            5_200, "#1e4a2a"),
-        CanhGioi(8,  "Luyện Khí Tầng 2",            2_600, "#1e3a5f"),
-        CanhGioi(7,  "Luyện Khí Tầng 1",            1_600, "#1e3a5f"),
-        CanhGioi(6,  "Tiên Thiên Võ Giả",           1_200, "#1e3a5f"),
-        CanhGioi(5,  "Hậu Thiên Võ Giả",            1_200, "#1e3a5f"),
-        CanhGioi(4,  "Nhất Lưu Võ Giả",               800, "#1e3a5f"),
-        CanhGioi(3,  "Nhị Lưu Võ Giả",                500, "#1e3a5f"),
-        CanhGioi(2,  "Tam Lưu Võ Giả",                300, "#1e3a5f"),
-        CanhGioi(1,  "Bắt Nhập Lưu Võ Giả",           100, "#1a1a2e")
+        CanhGioi(36, "Hóa Thần Sơ Kỳ",       300_000_000, "#8B4513",R.drawable.ic_lv9),
+        CanhGioi(35, "Xung Kích Hóa Thần",    100_000_000, "#8B4513",R.drawable.ic_lv9),
+        CanhGioi(34, "Rèn Luyện Thần Thức",    80_000_000, "#8B4513",R.drawable.ic_lv9),
+        CanhGioi(33, "Nhục Thân Đàn Hóa",      60_000_000, "#8B4513",R.drawable.ic_lv9),
+        CanhGioi(32, "Nguyên Anh Hậu Kỳ",      50_000_000, "#6B2D6B",R.drawable.ic_lv8),
+        CanhGioi(31, "Nguyên Anh Trung Kỳ",    30_000_000, "#6B2D6B",R.drawable.ic_lv8),
+        CanhGioi(30, "Nguyên Anh Sơ Kỳ",       10_000_000, "#6B2D6B",R.drawable.ic_lv8),
+        CanhGioi(29, "Phá Đan Ngưng Anh",      14_000_000, "#6B2D6B",R.drawable.ic_lv8),
+        CanhGioi(28, "Kim Đan Đại Viên Mãn",    7_000_000, "#1a4a4a",R.drawable.ic_lv7),
+        CanhGioi(27, "Kim Đan Hậu Kỳ",          5_000_000, "#1a4a4a",R.drawable.ic_lv7),
+        CanhGioi(26, "Kim Đan Trung Kỳ",        3_000_000, "#1a4a4a",R.drawable.ic_lv7),
+        CanhGioi(25, "Kim Đan Sơ Kỳ",           1_000_000, "#1a4a4a",R.drawable.ic_lv7),
+        CanhGioi(24, "Kết Đan",                   400_000, "#4a6b3a",R.drawable.ic_lv6),
+        CanhGioi(23, "Đạo Cơ Đại Viên Mãn",      300_000, "#4a6b3a",R.drawable.ic_lv6),
+        CanhGioi(22, "Đạo Cơ Hậu Kỳ",            200_000, "#4a6b3a",R.drawable.ic_lv6),
+        CanhGioi(21, "Đạo Cơ Trung Kỳ",          100_000, "#4a6b3a",R.drawable.ic_lv6),
+        CanhGioi(20, "Đạo Cơ Sơ Kỳ",              70_000, "#1e3a5f",R.drawable.ic_lv5),
+        CanhGioi(19, "Ngưng Kết Đạo Cơ",          30_000, "#1e3a5f",R.drawable.ic_lv5),
+        CanhGioi(18, "Luyện Khí Tầng 12",          30_000, "#1e3a5f",R.drawable.ic_lv5),
+        CanhGioi(17, "Luyện Khí Tầng 11",          27_000, "#1e3a5f",R.drawable.ic_lv5),
+        CanhGioi(16, "Luyện Khí Tầng 10",          25_000, "#6b2020",R.drawable.ic_lv4),
+        CanhGioi(15, "Luyện Khí Tầng 9",           20_000, "#6b2020",R.drawable.ic_lv4),
+        CanhGioi(14, "Luyện Khí Tầng 8",           17_000, "#6b2020",R.drawable.ic_lv4),
+        CanhGioi(13, "Luyện Khí Tầng 7",           14_000, "#6b2020",R.drawable.ic_lv4),
+        CanhGioi(12, "Luyện Khí Tầng 6",           10_000, "#1e4a2a",R.drawable.ic_lv3),
+        CanhGioi(11, "Luyện Khí Tầng 5",            8_000, "#1e4a2a",R.drawable.ic_lv3),
+        CanhGioi(10, "Luyện Khí Tầng 4",            7_000, "#1e4a2a",R.drawable.ic_lv3),
+        CanhGioi(9,  "Luyện Khí Tầng 3",            5_200, "#1e4a2a",R.drawable.ic_lv3),
+        CanhGioi(8,  "Luyện Khí Tầng 2",            2_600, "#1e3a5f",R.drawable.ic_lv2),
+        CanhGioi(7,  "Luyện Khí Tầng 1",            1_600, "#1e3a5f",R.drawable.ic_lv2),
+        CanhGioi(6,  "Tiên Thiên Võ Giả",           1_200, "#1e3a5f",R.drawable.ic_lv2),
+        CanhGioi(5,  "Hậu Thiên Võ Giả",            1_200, "#1e3a5f",R.drawable.ic_lv2),
+        CanhGioi(4,  "Nhất Lưu Võ Giả",               800, "#1e3a5f",R.drawable.ic_lv1),
+        CanhGioi(3,  "Nhị Lưu Võ Giả",                500, "#1e3a5f",R.drawable.ic_lv1),
+        CanhGioi(2,  "Tam Lưu Võ Giả",                300, "#1e3a5f",R.drawable.ic_lv1),
+        CanhGioi(1,  "Bất Nhập Lưu Võ Giả",           100, "#1a1a2e",R.drawable.ic_lv1)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,6 +110,7 @@ class ThanhVienActivity : AppCompatActivity() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val tvLevel: TextView = view.findViewById(R.id.tvLevel)
+            val imgIcon: ImageView = view.findViewById(R.id.imgIcon) // <--- THÊM DÒNG NÀY
             val tvTen: TextView = view.findViewById(R.id.tvTen)
             val tvKn: TextView = view.findViewById(R.id.tvKn)
             val container: View = view.findViewById(R.id.container)
@@ -127,6 +127,8 @@ class ThanhVienActivity : AppCompatActivity() {
             holder.tvLevel.text = item.level.toString()
             holder.tvTen.text = item.ten
             holder.tvKn.text = "KN : ${formatMoney(item.kn.toInt())}"
+
+            holder.imgIcon.setImageResource(item.iconRes)
 
             val bgColor = when {
                 item.level <= 4 -> "#2a2a2a"
@@ -162,8 +164,5 @@ class ThanhVienActivity : AppCompatActivity() {
     }
 
     private fun formatMoney(amount: Int) =
-        String.format("%,d", amount).replace(',', '.')
-
-    private fun formatMoney(amount: Long) =
         String.format("%,d", amount).replace(',', '.')
 }

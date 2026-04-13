@@ -81,6 +81,19 @@
                     android:text="0"/>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUploadTxt"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:text="TẢI LÊN TỪ FILE .TXT"
+                android:textColor="#60a5fa"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_upload"
+                app:iconTint="#60a5fa"
+                app:strokeColor="#60a5fa" />
+
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"

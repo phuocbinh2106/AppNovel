@@ -298,8 +298,19 @@ class NovelDetailActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val chapter = list[position]
-            holder.tvTitle.text = chapter.title
-            holder.tvTitle.setTextColor(Color.WHITE)
+
+            // 🔒 Hiển thị icon khóa và giá xu nếu chapter có phí
+            holder.tvTitle.text = if (chapter.coinPrice > 0)
+                "🔒 ${chapter.title}  (${chapter.coinPrice} xu)"
+            else
+                chapter.title
+
+            // Màu vàng = có phí, trắng = miễn phí
+            holder.tvTitle.setTextColor(
+                if (chapter.coinPrice > 0) Color.parseColor("#facc15")
+                else Color.WHITE
+            )
+
             holder.itemView.setOnClickListener { openChapter(chapter.id) }
         }
 

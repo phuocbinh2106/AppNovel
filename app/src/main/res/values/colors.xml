@@ -2,4 +2,65 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="orange_main">#fb923c</color>
+    <color name="gray_dark">#1a1a1a</color>
+    <color name="gray_text">#9ca3af</color>
+
+    <!-- Màu cho Chip -->
+    <color name="chip_selected_bg">#fb923c</color>
+    <color name="chip_unselected_bg">#262626</color>
+    <color name="chip_selected_text">#ffffff</color>
+    <color name="chip_unselected_text">#9ca3af</color>
+    <color name="chip_stroke">#3f3f46</color>
+
+    <color name="bg_main">#0F0F0F</color>
+    <color name="bg_secondary">#151515</color>
+    <color name="bg_card">#1A1A1A</color>
+    <color name="bg_bottom_nav">#1E1E1E</color>
+    <color name="bg_register">#172554</color>
+    <color name="bg_image_placeholder">#333333</color>
+    <color name="bg_divider_gray_800">#1F2937</color>
+    <color name="bg_divider_gray_700">#374151</color>
+    <color name="bg_handle_bar">#4B5563</color>
+    <color name="black_alpha_60">#99000000</color>
+    <color name="white_alpha_95">#F2FFFFFF</color>
+    <color name="white_alpha_20">#33FFFFFF</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_black">#000000</color>
+
+    <color name="text_gray_200">#E5E7EB</color>
+    <color name="text_gray_300">#D1D5DB</color>
+    <color name="text_gray_400">#9CA3AF</color>
+    <color name="text_gray_500">#6B7280</color>
+    <color name="text_gray_light">#AAAAAA</color>
+    <color name="text_gray_medium">#888888</color>
+
+
+    <color name="text_dark_800">#1F2937</color>
+    <color name="text_dark_900">#111827</color>
+    <color name="red_600">#DC2626</color>
+    <color name="red_400">#F87171</color>
+    <color name="orange_400">#FB923C</color>
+    <color name="amber_500">#F59E0B</color>
+    <color name="amber_300">#FCD34D</color>
+    <color name="yellow_500">#EAB308</color>
+    <color name="yellow_400">#FACC15</color>
+    <color name="text_green_light">#CDE7BE</color>
+    <color name="green_100">#C8E6C9</color>
+    <color name="green_200">#D1E9C2</color>
+    <color name="green_400">#4ADE80</color>
+    <color name="blue_400">#60A5FA</color>
+    <color name="cyan_400">#22D3EE</color>
+    <color name="purple_900">#4C1D6E</color>
+    <color name="purple_600">#7C3AED</color>
+    <color name="purple_400">#C084FC</color>
+    <color name="purple_300">#A78BFA</color>
+    <color name="pink_400">#F472B6</color>
+
+    <color name="bg_vip_dark">#121010</color>
+    <color name="bg_vip_dialog">#252A34</color>
+    <color name="vip_yellow_card">#FFE58F</color>
+    <color name="vip_yellow_text">#D4A64E</color>
+    <color name="vip_red_button">#FE2C55</color>
+    <color name="vip_border">#403A36</color>
 </resources>

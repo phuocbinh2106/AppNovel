@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:id="@+id/toolbar"
+            android:background="@color/bg_main">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Profile"
+                android:textColor="#ffffff"
+                android:textSize="18sp"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp">
+
+            <FrameLayout
+                android:layout_width="96dp"
+                android:layout_height="96dp">
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:id="@+id/imgAvatar"
+                    android:src="@drawable/ic_account"
+                    android:background="@drawable/circle_gray"
+                    android:scaleType="centerCrop"
+                    android:clipToOutline="true"/>
+
+                <FrameLayout
+                    android:id="@+id/btnChangeAvatar"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="@drawable/bg_upload_btn"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_upload"
+                        app:tint="#ffffff" />
+                </FrameLayout>
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvChangeAvatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thay đổi ảnh đại diện"
+                android:textColor="#a78bfa"
+                android:textSize="13sp"
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp">
+
+            <!-- Biệt danh -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Biệt danh"
+                android:textColor="#d1d5db"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_field"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="20dp">
+
+                <EditText
+                    android:id="@+id/edtUsername"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:hint="Nhập biệt danh"
+                    android:textColorHint="#6b7280"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_edit"
+                    app:tint="#9ca3af" />
+            </LinearLayout>
+
+            <!-- Email (chỉ xem) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="#d1d5db"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_field"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="email@gmail.com"
+                    android:textColor="#9ca3af"
+                    android:textSize="15sp"/>
+            </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Lưu thay đổi"
+                android:textSize="15sp"
+                android:textColor="#ffffff"
+                app:backgroundTint="#7c3aed"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="16dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+            <!-- Nút Xóa tài khoản -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteAccount"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Xóa tài khoản"
+                android:textSize="15sp"
+                android:textColor="#ffffff"
+                app:backgroundTint="#4c1d6e"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="40dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

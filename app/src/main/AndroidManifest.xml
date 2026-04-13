@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,20 +17,79 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppNovel">
         <activity
-            android:name=".RegisterActivity"
+            android:name=".MonthlyPassActivity"
+            android:exported="false" />
+        <!-- Activities mới -->
+        <activity
+            android:name=".SearchActivity"
             android:exported="false" />
         <activity
+            android:name=".NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReadChapterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NovelDetailActivity"
+            android:exported="false" /> <!-- Activities Quản trị -->
+        <activity
+            android:name=".AdminAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminNovelListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminChapterListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAddNovelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAddChapterActivity"
+            android:exported="false" /> <!-- Các Activities khác -->
+        <activity
+            android:name=".ThanhVienActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LichSuNapActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentWebViewActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="payment"
+                    android:scheme="appnovel" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ChonGoiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NapXuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".LoginActivity"
-            android:exported="true" >
+            android:exported="true" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
         </activity>
     </application>
 

@@ -1,4 +1,5 @@
 package com.example.appnovel
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -6,7 +7,6 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-// Truyền vào 1 list các link ảnh (String)
 class BannerAdapter(private val bannerImageList: List<String>) :
     RecyclerView.Adapter<BannerAdapter.BannerViewHolder>() {
 
@@ -20,13 +20,16 @@ class BannerAdapter(private val bannerImageList: List<String>) :
     }
 
     override fun onBindViewHolder(holder: BannerViewHolder, position: Int) {
-        val imageUrl = bannerImageList[position]
+        // Sử dụng toán tử chia lấy dư để lặp lại danh sách ảnh
+        val imageUrl = bannerImageList[position % bannerImageList.size]
 
-        // Dùng Glide load ảnh bo góc
         Glide.with(holder.itemView.context)
             .load(imageUrl)
             .into(holder.imgBanner)
     }
 
-    override fun getItemCount() = bannerImageList.size
+    // Trả về một con số rất lớn để có thể trượt "vô hạn"
+    override fun getItemCount(): Int {
+        return if (bannerImageList.isNotEmpty()) Int.MAX_VALUE else 0
+    }
 }

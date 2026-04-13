@@ -7,13 +7,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.appnovel.databinding.ActivityAdminChapterListBinding
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class AdminChapterListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminChapterListBinding
+    private val firestore = FirebaseFirestore.getInstance()
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var adapter: AdminChapterAdapter
-    private var selectedNovelId: Int = -1
+    private var selectedNovelId: String = ""
     private var selectedNovelTitle: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +25,7 @@ class AdminChapterListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         dbHelper = DatabaseHelper(this)
-        selectedNovelId = intent.getIntExtra("NOVEL_ID", -1)
+        selectedNovelId = intent.getStringExtra("NOVEL_ID") ?: ""
         selectedNovelTitle = intent.getStringExtra("NOVEL_TITLE")
 
         binding.tvToolbarTitle.text = selectedNovelTitle?.uppercase() ?: "CHAPTERS"
@@ -40,16 +43,18 @@ class AdminChapterListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (selectedNovelId != -1) {
-            loadChapters(selectedNovelId)
+        if (selectedNovelId.isNotEmpty()) {
+            loadChaptersFromFirebase(selectedNovelId)
         }
     }
 
     private fun setupRecyclerView() {
         adapter = AdminChapterAdapter(mutableListOf(),
             onEditClick = { chapter ->
-                // TODO: Chức năng sửa chapter
-                Toast.makeText(this, "Sửa: ${chapter.title}", Toast.LENGTH_SHORT).show()
+                // MỞ MÀN HÌNH SỬA CHAPTER
+                val intent = Intent(this, AdminAddChapterActivity::class.java)
+                intent.putExtra("CHAPTER_DATA", chapter)
+                startActivity(intent)
             },
             onDeleteClick = { chapter ->
                 showDeleteConfirmDialog(chapter)
@@ -59,16 +64,33 @@ class AdminChapterListActivity : AppCompatActivity() {
         binding.rvAdminChapters.adapter = adapter
     }
 
-    private fun loadChapters(novelId: Int) {
+    private fun loadChaptersFromFirebase(novelId: String) {
+        firestore.collection("chapters")
+            .whereEqualTo("novelId", novelId)
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    loadChaptersFromSQLite(novelId)
+                    return@addSnapshotListener
+                }
+                if (value != null) {
+                    val chapters = value.toObjects(Chapter::class.java)
+                    adapter.updateList(chapters)
+                }
+            }
+    }
+
+    private fun loadChaptersFromSQLite(novelId: String) {
         val chapters = mutableListOf<Chapter>()
         val cursor = dbHelper.getChaptersByNovelId(novelId)
         if (cursor.moveToFirst()) {
             do {
                 chapters.add(Chapter(
-                    id = cursor.getInt(0),
-                    novelId = cursor.getInt(1),
+                    id = cursor.getString(0),
+                    novelId = cursor.getString(1),
                     title = cursor.getString(2) ?: "",
-                    content = cursor.getString(3) ?: ""
+                    content = cursor.getString(3) ?: "",
+                    coinPrice = cursor.getInt(4)
                 ))
             } while (cursor.moveToNext())
         }
@@ -79,12 +101,13 @@ class AdminChapterListActivity : AppCompatActivity() {
     private fun showDeleteConfirmDialog(chapter: Chapter) {
         AlertDialog.Builder(this)
             .setTitle("Xóa chapter")
-            .setMessage("Bạn có chắc muốn xóa '${chapter.title}'?")
+            .setMessage("Bạn có chắc muốn xóa '${chapter.title}' trên Cloud?")
             .setPositiveButton("Xóa") { _, _ ->
-                if (dbHelper.deleteChapter(chapter.id)) {
-                    Toast.makeText(this, "Đã xóa thành công", Toast.LENGTH_SHORT).show()
-                    loadChapters(selectedNovelId)
-                }
+                firestore.collection("chapters").document(chapter.id).delete()
+                    .addOnSuccessListener {
+                        dbHelper.deleteChapter(chapter.id)
+                        Toast.makeText(this, "Đã xóa thành công", Toast.LENGTH_SHORT).show()
+                    }
             }
             .setNegativeButton("Hủy", null)
             .show()

@@ -58,7 +58,9 @@
                 android:layout_marginTop="8dp" />
         </LinearLayout>
 
+        <!-- PHẦN CHỨA NÚT SỬA/XÓA - ID: layoutActions -->
         <LinearLayout
+            android:id="@+id/layoutActions"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"

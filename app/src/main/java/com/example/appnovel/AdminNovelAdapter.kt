@@ -10,7 +10,8 @@ import com.bumptech.glide.Glide
 
 class AdminNovelAdapter(
     private var novelList: List<Novel>,
-    private val onItemClick: (Novel) -> Unit, // Click vào cả dòng
+    private val isSelectionMode: Boolean = false, // TRUE nếu chỉ dùng để chọn truyện vào quản lý chapter
+    private val onItemClick: (Novel) -> Unit,
     private val onEditClick: (Novel) -> Unit,
     private val onDeleteClick: (Novel) -> Unit
 ) : RecyclerView.Adapter<AdminNovelAdapter.NovelViewHolder>() {
@@ -22,6 +23,7 @@ class AdminNovelAdapter(
         val tvStatus: TextView = view.findViewById(R.id.tvStatus)
         val btnEdit: ImageView = view.findViewById(R.id.btnEdit)
         val btnDelete: ImageView = view.findViewById(R.id.btnDelete)
+        val layoutActions: View = view.findViewById(R.id.layoutActions) // Cần thêm ID này vào XML
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NovelViewHolder {
@@ -40,9 +42,14 @@ class AdminNovelAdapter(
             .placeholder(android.R.drawable.ic_menu_gallery)
             .into(holder.imgNovel)
 
-        // Click vào cả dòng truyện
-        holder.itemView.setOnClickListener { onItemClick(novel) }
+        // NẾU LÀ CHẾ ĐỘ CHỌN TRUYỆN -> ẨN NÚT SỬA/XÓA
+        if (isSelectionMode) {
+            holder.layoutActions.visibility = View.GONE
+        } else {
+            holder.layoutActions.visibility = View.VISIBLE
+        }
 
+        holder.itemView.setOnClickListener { onItemClick(novel) }
         holder.btnEdit.setOnClickListener { onEditClick(novel) }
         holder.btnDelete.setOnClickListener { onDeleteClick(novel) }
     }

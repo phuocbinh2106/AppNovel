@@ -11,8 +11,8 @@ import org.json.JSONObject
 class ReadChapterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReadChapterBinding
     private lateinit var db: DatabaseHelper
-    private var chapterId = -1
-    private var novelId = -1
+    private var chapterId = ""
+    private var novelId = ""
     private var chapterList = listOf<Chapter>()
     private var currentIndex = 0
 
@@ -22,8 +22,8 @@ class ReadChapterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = DatabaseHelper(this)
-        chapterId = intent.getIntExtra("CHAPTER_ID", -1)
-        novelId = intent.getIntExtra("NOVEL_ID", -1)
+        chapterId = intent.getStringExtra("CHAPTER_ID") ?: ""
+        novelId = intent.getStringExtra("NOVEL_ID") ?: ""
 
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
@@ -39,7 +39,7 @@ class ReadChapterActivity : AppCompatActivity() {
         if (cursor.moveToFirst()) {
             do {
                 list.add(Chapter(
-                    id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_CH_ID)),
+                    id = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_CH_ID)),
                     novelId = novelId,
                     title = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_CH_TITLE)),
                     content = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_CH_CONTENT)),
@@ -52,7 +52,7 @@ class ReadChapterActivity : AppCompatActivity() {
         currentIndex = list.indexOfFirst { it.id == chapterId }
     }
 
-    private fun loadChapter(id: Int) {
+    private fun loadChapter(id: String) {
         val chapter = chapterList.find { it.id == id } ?: return
         currentIndex = chapterList.indexOf(chapter)
 
@@ -94,18 +94,18 @@ class ReadChapterActivity : AppCompatActivity() {
         // Xóa entry cũ nếu có
         val newArr = JSONArray()
         for (i in 0 until arr.length()) {
-            if (arr.getJSONObject(i).getString("novelId") != novelId.toString()) {
+            if (arr.getJSONObject(i).getString("novelId") != novelId) {
                 newArr.put(arr.getJSONObject(i))
             }
         }
 
         // Thêm entry mới vào đầu
         val obj = JSONObject().apply {
-            put("novelId", novelId.toString())
+            put("novelId", novelId)
             put("title", novel.title)
             put("coverUrl", novel.imageUrl)
             put("lastChapter", chapter.title)
-            put("lastChapterId", chapter.id.toString())
+            put("lastChapterId", chapter.id)
             put("timestamp", System.currentTimeMillis())
         }
 
@@ -135,7 +135,7 @@ class ReadChapterActivity : AppCompatActivity() {
 
         for (i in 0 until arr.length()) {
             val obj = arr.getJSONObject(i)
-            if (obj.getString("novelId") == novelId.toString()) {
+            if (obj.getString("novelId") == novelId) {
                 obj.put("lastChapter", chapter.title)
                 prefs.edit().putString("tu_truyen", arr.toString()).apply()
                 break

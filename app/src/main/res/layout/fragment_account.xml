@@ -472,7 +472,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Divider hàng 1-2 -->
+                <!-- Divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
@@ -569,7 +569,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Divider hàng 2-3 -->
+                <!-- Divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
@@ -722,7 +722,7 @@
                 android:id="@+id/btnChangeBackgroundColor"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_card_dark"
                 android:clickable="true"
                 android:focusable="true"
@@ -752,6 +752,64 @@
                     android:text="Thay đổi màu nền"
                     android:textColor="#ffffff"
                     android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_right"
+                    app:tint="#9ca3af" />
+            </LinearLayout>
+
+            <!-- QUẢN LÝ HỆ THỐNG (THÊM LẠI Ở ĐÂY) -->
+            <LinearLayout
+                android:id="@+id/btnAdminManager"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/bg_card_dark"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="12dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_circle_orange"
+                        android:padding="8dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_settings"
+                        app:tint="#fb923c" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quản lý hệ thống"
+                        android:textColor="#ffffff"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dành riêng cho Admin/Uploader"
+                        android:textColor="#9ca3af"
+                        android:textSize="11sp" />
+                </LinearLayout>
 
                 <ImageView
                     android:layout_width="24dp"

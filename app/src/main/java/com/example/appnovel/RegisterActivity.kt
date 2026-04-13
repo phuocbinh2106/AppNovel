@@ -62,41 +62,40 @@ class RegisterActivity : AppCompatActivity() {
                 .addOnSuccessListener { result ->
                     val uid = result.user?.uid ?: return@addOnSuccessListener
 
-                    db.collection("users").document(uid).set(
-                        mapOf(
-                            "username" to username,
-                            "email" to email,
-                            "coins" to 0L
-                        )
-                    ).addOnSuccessListener {
-                        getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
-                            .putBoolean("isLoggedIn", true)
-                            .putString("userId", uid)
-                            .putString("username", username)
-                            .putString("email", email)
-                            .putInt("coins", 0)
-                            .apply()
+                    // CHUẨN BỊ DỮ LIỆU ĐẦY ĐỦ ĐỂ ĐẨY LÊN CLOUD
+                    val userMap = hashMapOf(
+                        "id" to uid,
+                        "username" to username,
+                        "email" to email,
+                        "coins" to 0,
+                        "role" to "user" // Mặc định tài khoản mới là user
+                    )
 
-                        Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
-                        startActivity(
-                            Intent(this, MainActivity::class.java).apply {
+                    db.collection("users").document(uid).set(userMap)
+                        .addOnSuccessListener {
+                            getSharedPreferences("UserPrefs", Context.MODE_PRIVATE).edit()
+                                .putBoolean("isLoggedIn", true)
+                                .putString("userId", uid)
+                                .putString("username", username)
+                                .putString("email", email)
+                                .putString("role", "user")
+                                .putInt("coins", 0)
+                                .apply()
+
+                            Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, MainActivity::class.java).apply {
                                 flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                            }
-                        )
-                        finish()
-                    }.addOnFailureListener {
-                        btnRegister.isEnabled = true
-                        Toast.makeText(this, "Đã có lỗi xảy ra, thử lại sau", Toast.LENGTH_SHORT).show()
-                    }
+                            })
+                            finish()
+                        }
+                        .addOnFailureListener {
+                            btnRegister.isEnabled = true
+                            Toast.makeText(this, "Lỗi lưu dữ liệu người dùng!", Toast.LENGTH_SHORT).show()
+                        }
                 }
                 .addOnFailureListener { e ->
                     btnRegister.isEnabled = true
-                    val msg = when {
-                        e.message?.contains("email address is already in use") == true -> "Email đã tồn tại"
-                        e.message?.contains("badly formatted") == true -> "Email không hợp lệ"
-                        else -> "Đã có lỗi xảy ra, thử lại sau"
-                    }
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
     }

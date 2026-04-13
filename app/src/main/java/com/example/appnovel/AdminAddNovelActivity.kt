@@ -116,21 +116,29 @@ class AdminAddNovelActivity : AppCompatActivity() {
                 val fileName = "covers/${UUID.randomUUID()}.jpg"
                 val storageRef = storage.reference.child(fileName)
 
+                // BƯỚC 1: Bắt đầu up ảnh
                 storageRef.putFile(imageUri!!)
                     .addOnSuccessListener {
-                        // Lấy link URL sau khi upload thành công
-                        storageRef.downloadUrl.addOnSuccessListener { uri ->
-                            uploadedImageUrl = uri.toString()
-                            // Có link ảnh rồi thì lưu vào Firestore
-                            saveNovelToFirestore(title, author, desc, selectedGenres, novel?.status ?: "Đang ra")
-                        }
+                        // BƯỚC 2: CHỈ KHI NÀO UP XONG THÀNH CÔNG (nằm trong block này)
+                        // mới bắt đầu gọi lệnh xin link download
+                        storageRef.downloadUrl
+                            .addOnSuccessListener { uri ->
+                                uploadedImageUrl = uri.toString()
+                                // Có link ảnh rồi thì lưu vào Firestore
+                                saveNovelToFirestore(title, author, desc, selectedGenres, novel?.status ?: "Đang ra")
+                            }
+                            .addOnFailureListener { e ->
+                                btnSave.isEnabled = true
+                                Toast.makeText(this, "Lỗi lấy link ảnh: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
                     }
-                    .addOnFailureListener {
+                    .addOnFailureListener { e ->
+                        // Bắt lỗi nếu ngay từ bước up file đã hỏng
                         btnSave.isEnabled = true
-                        Toast.makeText(this, "Lỗi khi tải ảnh lên!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Lỗi up ảnh: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                // NẾU KHÔNG ĐỔI ẢNH (Chỉ Edit chữ) -> LƯU LUÔN BẰNG LINK CŨ
+                // ... (Phần else giữ nguyên)
                 saveNovelToFirestore(title, author, desc, selectedGenres, novel?.status ?: "Đang ra")
             }
         }
@@ -138,6 +146,7 @@ class AdminAddNovelActivity : AppCompatActivity() {
 
     // HÀM LƯU VÀO FIRESTORE (Tách ra cho gọn)
     private fun saveNovelToFirestore(title: String, author: String, desc: String, genres: List<String>, status: String) {
+        val currentTime = System.currentTimeMillis()
         val novelData = hashMapOf(
             "title" to title,
             "author" to author,
@@ -145,7 +154,9 @@ class AdminAddNovelActivity : AppCompatActivity() {
             "imageUrl" to uploadedImageUrl, // Dùng link ảnh vừa tạo (hoặc link cũ)
             "description" to desc,
             "status" to status,
-            "uploaderId" to selectedUploaderId
+            "uploaderId" to selectedUploaderId,
+            "views" to 0,
+            "lastChapterTimestamp" to currentTime
         )
 
         if (editingNovelId != null) {

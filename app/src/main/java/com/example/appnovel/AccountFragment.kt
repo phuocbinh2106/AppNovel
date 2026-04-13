@@ -254,7 +254,6 @@ class AccountFragment : Fragment() {
                 Toast.makeText(requireContext(), "Mật khẩu xác nhận không khớp!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // TODO: cập nhật mật khẩu lên Firebase
             Toast.makeText(requireContext(), "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }

@@ -76,25 +76,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return writableDatabase.insert(TABLE_NOVELS, null, v)
     }
 
-    fun getAllNovels(): List<Novel> {
-        val list = mutableListOf<Novel>()
-        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_NOVELS ORDER BY rowid DESC", null)
-        if (cursor.moveToFirst()) {
-            do { list.add(cursorToNovel(cursor)) } while (cursor.moveToNext())
-        }
-        cursor.close(); return list
-    }
-
-    fun getNovelsByRole(role: String, userId: String): List<Novel> {
-        val list = mutableListOf<Novel>()
-        val sql = if (role == ROLE_ADMIN) "SELECT * FROM $TABLE_NOVELS" else "SELECT * FROM $TABLE_NOVELS WHERE $COL_NOV_UPLOADER_ID = '$userId'"
-        val cursor = readableDatabase.rawQuery(sql, null)
-        if (cursor.moveToFirst()) {
-            do { list.add(cursorToNovel(cursor)) } while (cursor.moveToNext())
-        }
-        cursor.close(); return list
-    }
-
     private fun cursorToNovel(cursor: Cursor): Novel {
         val genreString = cursor.getString(3) ?: ""
         val genreList = if (genreString.isEmpty()) emptyList() else genreString.split(",")
@@ -108,11 +89,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COL_CH_COIN_PRICE, coinPrice)
         }
         return writableDatabase.update(TABLE_CHAPTERS, v, "$COL_CH_ID=?", arrayOf(chapterId)) > 0
-    }
-
-    fun deleteNovel(id: String): Boolean {
-        writableDatabase.delete(TABLE_CHAPTERS, "$COL_CH_NOVEL_ID=?", arrayOf(id))
-        return writableDatabase.delete(TABLE_NOVELS, "$COL_NOV_ID=?", arrayOf(id)) > 0
     }
 
     fun addChapter(id: String, novelId: String, title: String, content: String, coinPrice: Int = 0): Long {
@@ -130,16 +106,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return writableDatabase.delete(TABLE_CHAPTERS, "$COL_CH_ID=?", arrayOf(chapterId)) > 0
     }
 
-    fun getAllUploaders(): List<User> {
-        val list = mutableListOf<User>()
-        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_USERS WHERE $COL_ROLE = ?", arrayOf(ROLE_UPLOADER))
-        if (cursor.moveToFirst()) {
-            do {
-                list.add(User(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(4), cursor.getString(5)))
-            } while (cursor.moveToNext())
-        }
-        cursor.close(); return list
-    }
     private fun hashPassword(p: String): String = MessageDigest.getInstance("SHA-256").digest(p.toByteArray()).joinToString("") { "%02x".format(it) }
 
     fun getUserCoins(userId: String): Int {

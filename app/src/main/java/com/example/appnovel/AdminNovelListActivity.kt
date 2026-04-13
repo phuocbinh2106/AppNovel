@@ -22,6 +22,8 @@ class AdminNovelListActivity : AppCompatActivity() {
         binding = ActivityAdminNovelListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.toolbar.setNavigationOnClickListener { finish() }
+
         currentMode = intent.getStringExtra("MODE") ?: "MANAGE_NOVEL"
 
         setupRecyclerView()

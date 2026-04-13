@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#0f0f0f">
+    android:background="@color/bg_main">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#0f0f0f"
+        android:background="@color/bg_main"
         app:title="Thanh toán"
         app:titleTextColor="#ffffff"
         app:navigationIcon="@drawable/ic_arrow_back"/>

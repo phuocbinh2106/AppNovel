@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0f0f0f"
+    android:background="@color/bg_main"
     android:orientation="vertical">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0f0f0f"
+        android:background="@color/bg_main"
         app:tabGravity="fill"
         app:tabMode="fixed"
         app:tabSelectedTextColor="#4ade80"

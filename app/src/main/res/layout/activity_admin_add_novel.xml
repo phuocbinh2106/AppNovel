@@ -1,129 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0f0f0f">
+    android:background="@color/bg_main"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_main"
+        app:navigationIcon="@drawable/ic_arrow_back">
 
         <TextView
             android:id="@+id/tvHeaderTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="THÊM TRUYỆN MỚI"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"
-            android:textColor="#fb923c"/>
+            android:gravity="center"
+            android:textColor="#fb923c"
+            android:layout_marginEnd="48dp"/>
 
-        <EditText
-            android:id="@+id/edtNovelTitle"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:hint="Tên bộ truyện"
-            android:textColor="#ffffff"
-            android:textColorHint="#6b7280"
-            android:background="@drawable/bg_card_dark"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="12dp"/>
+    </androidx.appcompat.widget.Toolbar>
 
-        <EditText
-            android:id="@+id/edtNovelAuthor"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:hint="Tên tác giả"
-            android:textColor="#ffffff"
-            android:textColorHint="#6b7280"
-            android:background="@drawable/bg_card_dark"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="12dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Thể loại"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"/>
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupGenre"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:itemSpacing="8dp"
-            app:singleSelection="false" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <EditText
-            android:id="@+id/edtNovelImageUrl"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:hint="Link ảnh bìa"
-            android:textColor="#ffffff"
-            android:textColorHint="#6b7280"
-            android:background="@drawable/bg_card_dark"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="12dp"/>
-
-        <EditText
-            android:id="@+id/edtNovelDesc"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:hint="Mô tả nội dung..."
-            android:textColor="#ffffff"
-            android:textColorHint="#6b7280"
-            android:background="@drawable/bg_card_dark"
-            android:padding="16dp"
-            android:gravity="top"
-            android:layout_marginBottom="24dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Phân quyền Uploader"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxBackgroundColor="#1a1a1a"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
-            app:hintTextColor="#fb923c"
-            android:layout_marginBottom="32dp">
-
-            <AutoCompleteTextView
-                android:id="@+id/autoCompleteUploader"
+            <EditText
+                android:id="@+id/edtNovelTitle"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:inputType="none"
-                android:hint="Chọn người quản lý"
+                android:hint="Tên bộ truyện"
                 android:textColor="#ffffff"
-                android:paddingHorizontal="16dp"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:textColorHint="#6b7280"
+                android:background="@drawable/bg_card_dark"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp"/>
 
-        <Button
-            android:id="@+id/btnAddNovel"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="LƯU THAY ĐỔI"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:backgroundTint="#fb923c"
-            android:textColor="#ffffff"
-            app:cornerRadius="12dp"/>
+            <EditText
+                android:id="@+id/edtNovelAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Tên tác giả"
+                android:textColor="#ffffff"
+                android:textColorHint="#6b7280"
+                android:background="@drawable/bg_card_dark"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp"/>
 
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thể loại"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupGenre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:itemSpacing="8dp"
+                app:singleSelection="false"/>
+
+            <EditText
+                android:id="@+id/edtNovelImageUrl"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Link ảnh bìa"
+                android:textColor="#ffffff"
+                android:textColorHint="#6b7280"
+                android:background="@drawable/bg_card_dark"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/edtNovelDesc"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:hint="Mô tả nội dung..."
+                android:textColor="#ffffff"
+                android:textColorHint="#6b7280"
+                android:background="@drawable/bg_card_dark"
+                android:padding="16dp"
+                android:gravity="top"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phân quyền Uploader"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginBottom="12dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="#1a1a1a"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:hintTextColor="#fb923c"
+                android:layout_marginBottom="32dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoCompleteUploader"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:inputType="none"
+                    android:hint="Chọn người quản lý"
+                    android:textColor="#ffffff"
+                    android:paddingHorizontal="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnAddNovel"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="LƯU THAY ĐỔI"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#fb923c"
+                android:textColor="#ffffff"
+                android:layout_marginBottom="32dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

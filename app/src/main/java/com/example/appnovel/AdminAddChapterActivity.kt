@@ -20,12 +20,19 @@ class AdminAddChapterActivity : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        toolbar.setNavigationOnClickListener { finish() }
+
         val tvHeader = findViewById<TextView>(R.id.tvChapterHeaderTitle)
-        val autoCompleteNovel = findViewById<AutoCompleteTextView>(R.id.autoCompleteNovel)
         val edtTitle = findViewById<TextInputEditText>(R.id.edtChapterTitle)
         val edtPrice = findViewById<TextInputEditText>(R.id.edtChapterPrice)
         val edtContent = findViewById<TextInputEditText>(R.id.edtChapterContent)
         val btnSave = findViewById<Button>(R.id.btnAddChapter)
+
+        // Lấy novelId từ Intent — đã được chọn từ màn hình trước
+        selectedNovelId = intent.getStringExtra("NOVEL_ID") ?: ""
 
         val chapter = intent.getSerializableExtra("CHAPTER_DATA") as? Chapter
         if (chapter != null) {
@@ -33,22 +40,14 @@ class AdminAddChapterActivity : AppCompatActivity() {
             selectedNovelId = chapter.novelId
             tvHeader.text = "CHỈNH SỬA CHAPTER"
             btnSave.text = "CẬP NHẬT CHAPTER"
-            
             edtTitle.setText(chapter.title)
             edtPrice.setText(chapter.coinPrice.toString())
             edtContent.setText(chapter.content)
         }
 
-        val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val role = sharedPrefs.getString("role", "user") ?: "user"
-        val userId = sharedPrefs.getString("userId", "") ?: ""
-
-        loadNovelList(autoCompleteNovel, role, userId)
-
         btnSave.setOnClickListener {
             val title = edtTitle.text.toString().trim()
-            val priceStr = edtPrice.text.toString().trim()
-            val price = priceStr.toIntOrNull() ?: 0
+            val price = edtPrice.text.toString().toIntOrNull() ?: 0
             val content = edtContent.text.toString().trim()
 
             if (selectedNovelId.isEmpty() || title.isEmpty() || content.isEmpty()) {
@@ -58,7 +57,7 @@ class AdminAddChapterActivity : AppCompatActivity() {
 
             btnSave.isEnabled = false
             val currentTime = System.currentTimeMillis()
-            
+
             val chapterData = hashMapOf(
                 "novelId" to selectedNovelId,
                 "title" to title,
@@ -77,17 +76,25 @@ class AdminAddChapterActivity : AppCompatActivity() {
                         Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show()
                         finish()
                     }
+                    .addOnFailureListener {
+                        btnSave.isEnabled = true
+                        Toast.makeText(this, "Lỗi cập nhật!", Toast.LENGTH_SHORT).show()
+                    }
             } else {
                 val newDoc = firestore.collection("chapters").document()
                 val newId = newDoc.id
                 chapterData["id"] = newId
-                
+
                 newDoc.set(chapterData)
                     .addOnSuccessListener {
                         updateNovelTimestamp(selectedNovelId, currentTime)
                         dbHelper.addChapter(newId, selectedNovelId, title, content, price)
                         Toast.makeText(this, "Xuất bản thành công!", Toast.LENGTH_SHORT).show()
                         finish()
+                    }
+                    .addOnFailureListener {
+                        btnSave.isEnabled = true
+                        Toast.makeText(this, "Lỗi xuất bản!", Toast.LENGTH_SHORT).show()
                     }
             }
         }
@@ -96,22 +103,5 @@ class AdminAddChapterActivity : AppCompatActivity() {
     private fun updateNovelTimestamp(novelId: String, timestamp: Long) {
         firestore.collection("novels").document(novelId)
             .update("lastChapterTimestamp", timestamp)
-    }
-
-    private fun loadNovelList(autoComplete: AutoCompleteTextView, role: String, userId: String) {
-        val novels = dbHelper.getNovelsByRole(role, userId)
-        val titles = novels.map { it.title }
-        
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, titles)
-        autoComplete.setAdapter(adapter)
-
-        autoComplete.setOnItemClickListener { _, _, position, _ ->
-            selectedNovelId = novels[position].id
-        }
-
-        if (editingChapterId != null) {
-            val currentNovel = novels.find { it.id == selectedNovelId }
-            autoComplete.setText(currentNovel?.title, false)
-        }
     }
 }

@@ -71,7 +71,16 @@ class ProfileActivity : AppCompatActivity() {
 
         edtUsername.setText(currentUsername)
         tvEmail.text = currentEmail
-        avatarUri?.let { imgAvatar.setImageURI(Uri.parse(it)) }
+        if (!avatarUri.isNullOrEmpty()) {
+            com.bumptech.glide.Glide.with(this)
+                .load(avatarUri)
+                .placeholder(R.drawable.ic_account) // Thay bằng tên icon mặc định của bạn
+                .error(R.drawable.ic_account)
+                .circleCrop() // Tự động bo tròn ảnh
+                .into(imgAvatar)
+        } else {
+            imgAvatar.setImageResource(R.drawable.ic_account)
+        }
 
         val openGallery = {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)

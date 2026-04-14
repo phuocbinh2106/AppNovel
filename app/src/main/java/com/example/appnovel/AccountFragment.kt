@@ -159,6 +159,23 @@ class AccountFragment : Fragment() {
             val role = sharedPref.getString("role", "user")
             binding.btnAdminManager.visibility =
                 if (role == "admin" || role == "uploader") View.VISIBLE else View.GONE
+
+            // ── THÊM ĐOẠN NÀY ĐỂ LOAD AVATAR ──
+            val avatarUri = sharedPref.getString("avatarUri", null)
+
+            if (!avatarUri.isNullOrEmpty()) {
+                // Dùng Glide để load ảnh. Nếu ảnh bị lỗi/mất quyền sẽ tự động nhảy vào .error()
+                com.bumptech.glide.Glide.with(requireContext())
+                    .load(avatarUri)
+                    .placeholder(R.drawable.ic_account)
+                    .error(R.drawable.ic_account)
+                    .circleCrop()
+                    .into(binding.imgAvatar)
+            } else {
+                binding.imgAvatar.setImageResource(R.drawable.ic_account)
+            }
+            // ──────────────────────────────────
+
         } else {
             binding.layoutGuest.visibility    = View.VISIBLE
             binding.layoutLoggedIn.visibility = View.GONE
@@ -166,6 +183,9 @@ class AccountFragment : Fragment() {
             // Tắt switch khi đăng xuất
             readPref.edit().putBoolean("autoUnlock", false).apply()
             firestoreListener?.remove()
+
+            // Xóa ảnh avatar về mặc định khi đăng xuất
+            binding.imgAvatar.setImageResource(R.drawable.ic_account)
         }
     }
 

@@ -74,6 +74,8 @@ class NovelDetailActivity : AppCompatActivity() {
             )
         }
 
+        binding.btnFollow.setOnClickListener { toggleFollowOnCloud() }
+
         binding.btnOpenRating.setOnClickListener {
             if (userId.isEmpty()) {
                 Toast.makeText(this, "Vui lòng đăng nhập để đánh giá", Toast.LENGTH_SHORT).show()
@@ -211,7 +213,6 @@ class NovelDetailActivity : AppCompatActivity() {
         binding.btnFollow.imageTintList = ColorStateList.valueOf(
             if (isFollowing) Color.parseColor("#facc15") else Color.parseColor("#9ca3af")
         )
-        binding.btnFollow.setOnClickListener { toggleFollowOnCloud() }
     }
 
     private fun toggleFollowOnCloud() {
